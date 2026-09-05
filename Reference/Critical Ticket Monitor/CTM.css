@@ -1,0 +1,825 @@
+.custom-wrapper {
+    font-family: 'Inter', sans-serif !important;
+    background: #0a1628;
+    min-height: 100vh;
+    color: #fff;
+}
+
+/* .custom-modal-field .el-select {
+     width: 100%; max-width: 480px; display: block; 
+} */
+
+
+.custom-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+}
+
+.custom-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.custom-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.custom-btn-filter {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.custom-btn-filter:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.custom-btn-filter.active {
+    background: #fff;
+    color: #0052cc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.custom-btn-add:hover {
+
+    background: #00e67642;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 204, 136, 0.4);
+}
+
+.custom-btn-add:disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.custom-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 0 16px;
+    min-height: 900px;
+    margin: 0 auto;
+}
+
+.custom-ticket-card {
+    background: #1e3250;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    height: 830px;
+    box-sizing: border-box;
+    border: 1px solid rgba(150, 232, 255, 0);
+    border-radius: 8px;
+    box-shadow: inset 0px 0px 12px 0px rgb(0 223 255 / 38%);
+    backdrop-filter: blur(8px);
+    background: radial-gradient(57.00% 90.00% at 50% 100%, rgb(95 190 222 / 10%), rgba(0, 0, 0, 0)), linear-gradient(180.00deg, rgba(44, 102, 124, 0.1) 2.523%, rgba(44, 102, 124, 0.05) 95.919%);
+    padding: 8px 16px;
+    opacity: 0.9;
+}
+
+.custom-ticket-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0052cc, #00a3ff);
+}
+
+.custom-ticket-card.pending::before {
+    background: linear-gradient(90deg, #ff9900, #ffaa00);
+}
+
+.custom-ticket-card.completed::before {
+    background: linear-gradient(90deg, #00cc88, #00e676);
+}
+
+.custom-ticket-card:hover {
+    transform: translateY(-8px);
+}
+
+.custom-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: rgba(0, 82, 204, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.custom-ticket-id {
+    font-size: 15px;
+    font-weight: 700;
+    color: #00a3ff;
+    letter-spacing: 0.5px;
+}
+
+.custom-domain-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(0, 163, 255, 0.15);
+    color: #00a3ff;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 10px;
+    border: 1px solid rgba(0, 163, 255, 0.3);
+}
+
+.custom-domain-mpls-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #00e69d;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 10px;
+    border: 1px solid rgba(0, 163, 255, 0.3);
+}
+
+.custom-domain-dwdm-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #cc3344;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 10px;
+    border: 1px solid rgb(185 48 65);
+}
+
+.custom-ticket-status.status-completed {
+    color: #00cc88;
+    border: 2px solid #00cc88;
+}
+
+.custom-ticket-status.status-processing {
+    color: #ff9900;
+    border: 2px solid #ff9900;
+}
+
+.custom-ticket-status {
+    padding: 2px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-card-content {
+    padding: 8px 20px;
+}
+
+
+
+.custom-card-domain-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    color: #fff;
+    background: #00e69d;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.custom-card-domain-dwdw-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    color: #cc3344;
+    background: #cc334442;
+    padding: 10px 16px;
+    border: 2px solid #cc3344;
+    border-radius: 8px;
+}
+
+.custom-card-domain-mpls-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #00e69d;
+    background: #00e69d3b;
+    border: 2px solid #00e69d;
+}
+
+.custom-btn-add {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #fff;
+    background: #00e69d;
+    border: 2px solid #00e69d;
+}
+
+.custom-field-domain-label {
+    /*color: #ffffff;
+     白色 */
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.custom-field-domain-value {
+    /*color: #ffffff;
+     白色 */
+    font-weight: 1000;
+    font-size: 18px;
+    word-break: break-word;
+}
+
+
+
+.custom-card-field {
+    display: flex;
+    margin-bottom: 4px;
+    font-size: 14px;
+    align-items: flex-start;
+    color: #dddddd;
+}
+
+.custom-field-label {
+    color: #8ba3c7;
+    min-width: 150px;
+    font-weight: 650;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.custom-field-tilte-value {
+    color: #e8f0fa;
+    font-weight: 500;
+    height: 50px;
+    flex: 1;
+    overflow-y: auto;
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+.custom-card-action {
+    padding: 14px 20px;
+    background: rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.custom-action-label {
+    color: #8ba3c7;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.custom-action-content {
+    color: #e8f0fa;
+    font-size: 12px;
+    line-height: 1.6;
+    max-height: 45px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+
+
+}
+
+.custom-impart-action-content {
+    color: #e8f0fa;
+    font-size: 12px;
+    line-height: 1.6;
+    height: 50px;
+    max-height: 50px;
+    overflow-y: auto;
+    /* 滚动显示 */
+    white-space: pre-line;
+    /* 保留换行 */
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #00afe6 #203352;
+}
+
+.custom-tt-action-content {
+    color: #e8f0fa;
+    font-size: 16px;
+    line-height: 1.6;
+    height: 300px;
+    overflow-y: scroll;
+    white-space: pre-line;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #00afe6 #203352;
+}
+
+.custom-card-actions {
+    display: flex;
+    gap: 10px;
+    padding: 8px 20px 4px 20px;
+}
+
+.custom-btn-card {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.custom-btn-details {
+    background: #064c7e;
+    color: #fff;
+}
+
+.custom-btn-details:hover {
+    box-shadow: 0 4px 15px rgba(0, 82, 204, 0.4);
+}
+
+.custom-btn-del {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e8f0fa;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.custom-btn-del:hover {
+    box-shadow: 0 4px 15px rgba(204, 51, 68, 0.4);
+}
+
+.custom-empty-state {
+    grid-column: span 3;
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.custom-loading {
+    grid-column: span 3;
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-modal.show {
+    display: flex;
+}
+
+.custom-modal-content {
+    background: #1e3250;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 82, 204, 0.3);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-modal-header h2 {
+    font-size: 18px;
+    color: #00a3ff;
+}
+
+.custom-modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.custom-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.custom-modal-body {
+    color: #e8f0fa;
+}
+
+.custom-modal-field {
+    margin-bottom: 18px;
+}
+
+.custom-modal-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #8ba3c7;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+.custom-modal-body .el-select {
+    width: 100%;
+    max-width: 470px;
+    /* 跟你的弹窗 600-padding 相配 */
+    display: block;
+}
+
+/* 2) el-select 触发框 - 深色风格，与弹窗协调 */
+.custom-modal-body .el-select .el-select__wrapper,
+.custom-modal-body .el-select.el-select--default .el-select__wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 82, 204, 0.4);
+    border-radius: 10px;
+    min-height: 40px;
+    box-shadow: none !important;
+    transition: border 0.3s;
+    display: flex;
+}
+
+.custom-modal-body .el-select .el-select__wrapper:hover {
+    border-color: #00a3ff;
+}
+
+.custom-modal-body .el-select .el-select__selection {
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* 3) 已选中的 tag - 科技蓝 */
+.custom-modal-body .el-select .el-tag {
+    background: rgba(0, 163, 255, 0.15);
+    border: 1px solid rgba(0, 163, 255, 0.4);
+    /* color: #00a3ff; */
+    color: #ffffff;
+    border-radius: 6px;
+}
+
+/* 4) 输入过滤文字颜色 */
+.custom-modal-body .el-select__input {
+    color: #e8f0fa;
+}
+
+.custom-modal-body .el-select__input-calculator {
+    position: absolute !important;
+    visibility: hidden !important;
+    pointer-events: none;
+}
+
+.custom-modal-body .el-select .el-tag {
+    max-width: 100%;
+    padding: 2px 8px;
+    background: rgba(0, 163, 255, 0.24);
+    border-color: rgba(0, 195, 255, 0.75);
+    box-shadow: 0 0 8px rgba(0, 163, 255, 0.12);
+}
+
+.custom-modal-body .el-select .el-tag__content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-modal-body .el-select .el-tag {
+    display: inline-flex;
+    align-items: center;
+}
+
+.custom-modal-body .el-select .el-tag__content {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.custom-modal-body .el-select .el-tag__close {
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    color: #d9f6ff !important;
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 50%;
+    transition: color 0.2s, background 0.2s;
+}
+
+.custom-modal-body .el-select .el-tag__close:hover {
+    color: #ffffff !important;
+    background: #d14343;
+}
+
+.custom-modal-body .el-select .el-tag__close svg {
+    width: 10px;
+    height: 10px;
+    fill: currentColor;
+}
+
+/* 6) 其它原生控件也统一到 470px，保持视觉整齐 */
+.custom-modal-body .custom-form-select,
+.custom-modal-body .custom-form-input,
+.custom-modal-body .custom-form-textarea {
+    width: 100%;
+    max-width: 470px;
+    box-sizing: border-box;
+}
+
+
+.custom-form-input {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #e8f0fa;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.custom-form-select {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #e8f0fa;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.custom-form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #e8f0fa;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.custom-form-input:focus {
+    outline: none;
+    border-color: #0052cc;
+    box-shadow: 0 0 15px rgba(0, 82, 204, 0.3);
+}
+
+.custom-form-select:focus {
+    outline: none;
+    border-color: #0052cc;
+    box-shadow: 0 0 15px rgba(0, 82, 204, 0.3);
+}
+
+.custom-form-textarea:focus {
+    outline: none;
+    border-color: #0052cc;
+    box-shadow: 0 0 15px rgba(0, 82, 204, 0.3);
+}
+
+.custom-form-input[readonly] {
+    background: rgba(0, 0, 0, 0.2);
+    color: #8ba3c7;
+    cursor: not-allowed;
+}
+
+.custom-form-select[readonly] {
+    background: rgba(0, 0, 0, 0.2);
+    color: #8ba3c7;
+    cursor: not-allowed;
+}
+
+.custom-form-select option {
+    background: #1e3250;
+    color: #fff;
+}
+
+.custom-impact-list {
+    margin-bottom: 10px;
+}
+
+.custom-impact-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.custom-impact-item .custom-form-input {
+    flex: 1;
+}
+
+.custom-btn-remove {
+    padding: 10px 14px;
+    background: #cc3344;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.custom-btn-remove:hover {
+    background: #ff4466;
+}
+
+.custom-btn-add-impact {
+    padding: 10px 18px;
+    background: #00cc88;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.custom-btn-add-impact:hover {
+    background: #00cc88;
+}
+
+.custom-modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-btn-submit {
+    flex: 1;
+    padding: 14px;
+    background: #0052cc;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.custom-btn-submit:hover {
+    background: #0066ff;
+    box-shadow: 0 4px 15px rgba(0, 82, 204, 0.4);
+}
+
+.custom-btn-cancel {
+    flex: 1;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    color: #e8f0fa;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.custom-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.custom-confirm-modal .custom-modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+
+.custom-confirm-icon {
+    width: 60px;
+    height: 60px;
+    background: #cc3344;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.custom-confirm-icon svg {
+    width: 30px;
+    height: 30px;
+    fill: #fff;
+}
+
+.custom-confirm-title {
+    font-size: 18px;
+    color: #e8f0fa;
+    margin-bottom: 10px;
+}
+
+.custom-confirm-message {
+    font-size: 14px;
+    color: #8ba3c7;
+    margin-bottom: 25px;
+}
+
+.custom-confirm-id {
+    color: #00a3ff;
+    font-weight: 600;
+}
+
+.custom-btn-delete {
+    background: #cc3344;
+}
+
+.custom-btn-delete:hover {
+    background: #ff4466;
+    box-shadow: 0 4px 15px rgba(204, 51, 68, 0.4);
+}
+
+.custom-toast {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #cc3344;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 2000;
+}
+
+.custom-toast.show {
+    display: block;
+}
+
+.custom-toast.toast-success {
+    background: #00cc88;
+    box-shadow: 0 4px 20px rgba(0, 204, 136, 0.4);
+}
+
+@media (max-width: 1200px) {
+    .custom-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .custom-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .custom-header-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
