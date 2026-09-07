@@ -31,17 +31,12 @@ function main() {
         );
         if (!COMMON_UTIL.isNull(ttLive) && !COMMON_UTIL.isNull(ttLive.result)) {
             let liveResult = ttLive.result;
-            if (!COMMON_UTIL.isNull(liveResult.incident_chronology)) {
-                ttInfo.tt_action = liveResult.incident_chronology;
-            }
-            if (!COMMON_UTIL.isNull(liveResult.title)) {
-                ttInfo.title = liveResult.title;
-            }
-            if (!COMMON_UTIL.isNull(liveResult.root_cause)) {
-                ttInfo.root_cause = liveResult.root_cause;
-            }
-            if (!COMMON_UTIL.isNull(liveResult.sub_root_cause)) {
-                ttInfo.sub_root_cause = liveResult.sub_root_cause;
+            ttInfo.tt_action = COMMON_UTIL.isNull(liveResult.incident_chronology) ? "" : liveResult.incident_chronology;
+            ttInfo.title = COMMON_UTIL.isNull(liveResult.title) ? "" : liveResult.title;
+            ttInfo.root_cause = COMMON_UTIL.isNull(liveResult.root_cause) ? "" : liveResult.root_cause;
+            ttInfo.sub_root_cause = COMMON_UTIL.isNull(liveResult.sub_root_cause) ? "" : liveResult.sub_root_cause;
+            if (!COMMON_UTIL.isNull(liveResult.estimated_cp)) {
+                ttInfo.estimated_cp = liveResult.estimated_cp;
             }
         }
     } catch (e) {

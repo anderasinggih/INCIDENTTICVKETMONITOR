@@ -28,14 +28,14 @@ function main() {
             fwaNum++;
         }
 
-        // Prioritas data live dari tt_troubleticket, jika kosong fallback ke tabel lokal incwo
-        let liveTitle = !COMMON_UTIL.isNull(info.tt_live_title) ? info.tt_live_title : info.title;
-        let liveAlarmTime = !COMMON_UTIL.isNull(info.tt_live_alarm_time) ? info.tt_live_alarm_time : info.alarm_time;
-        let liveClearTime = !COMMON_UTIL.isNull(info.tt_live_clear_time) ? info.tt_live_clear_time : info.clear_time;
-        let liveRootCause = !COMMON_UTIL.isNull(info.tt_live_root_cause) ? info.tt_live_root_cause : info.root_cause;
-        let liveSubRootCause = !COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? info.tt_live_sub_root_cause : info.sub_root_cause;
-        let liveAction = !COMMON_UTIL.isNull(info.tt_live_action) ? info.tt_live_action : info.tt_action;
-        let liveEstimatedCp = !COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? info.tt_live_estimated_cp : info.estimated_cp;
+        // Langsung ambil dari data utama tt_troubleticket (tanpa fallback ke tabel snapshot lokal)
+        let liveTitle = COMMON_UTIL.isNull(info.tt_live_title) ? "" : info.tt_live_title;
+        let liveAlarmTime = COMMON_UTIL.isNull(info.tt_live_alarm_time) ? "" : info.tt_live_alarm_time;
+        let liveClearTime = COMMON_UTIL.isNull(info.tt_live_clear_time) ? "" : info.tt_live_clear_time;
+        let liveRootCause = COMMON_UTIL.isNull(info.tt_live_root_cause) ? "" : info.tt_live_root_cause;
+        let liveSubRootCause = COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? "" : info.tt_live_sub_root_cause;
+        let liveAction = COMMON_UTIL.isNull(info.tt_live_action) ? "" : info.tt_live_action;
+        let liveEstimatedCp = COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? "" : info.tt_live_estimated_cp;
 
         list.push({
             id: info.orderid,
@@ -54,7 +54,7 @@ function main() {
             sub_root_cause: liveSubRootCause,
             rca_description: info.rca_description,
             predictive_etr: info.predictive_etr,
-            estimated_cp: info.tt_domain != "FTTH" ? "-" : liveEstimatedCp,
+            estimated_cp: info.tt_domain != "FTTH" ? "-" : (liveEstimatedCp || "-"),
             alarm_status: COMMON_UTIL.isNull(liveClearTime)
                 ? "OPEN"
                 : "Related To The Clear Time",
