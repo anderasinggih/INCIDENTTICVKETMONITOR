@@ -28,29 +28,38 @@ function main() {
             fwaNum++;
         }
 
+        // Prioritas data live dari tt_troubleticket, jika kosong fallback ke tabel lokal incwo
+        let liveTitle = !COMMON_UTIL.isNull(info.tt_live_title) ? info.tt_live_title : info.title;
+        let liveAlarmTime = !COMMON_UTIL.isNull(info.tt_live_alarm_time) ? info.tt_live_alarm_time : info.alarm_time;
+        let liveClearTime = !COMMON_UTIL.isNull(info.tt_live_clear_time) ? info.tt_live_clear_time : info.clear_time;
+        let liveRootCause = !COMMON_UTIL.isNull(info.tt_live_root_cause) ? info.tt_live_root_cause : info.root_cause;
+        let liveSubRootCause = !COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? info.tt_live_sub_root_cause : info.sub_root_cause;
+        let liveAction = !COMMON_UTIL.isNull(info.tt_live_action) ? info.tt_live_action : info.tt_action;
+        let liveEstimatedCp = !COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? info.tt_live_estimated_cp : info.estimated_cp;
+
         list.push({
             id: info.orderid,
-            title: info.title,
+            title: liveTitle,
             cm_orderid: info.cm_orderid,
             inter_station: info.inter_station,
             pic: info.pic,
             ticket_status: info.ticketstatus,
-            alarm_time: COMMON_UTIL.isNull(info.alarm_time)
+            alarm_time: COMMON_UTIL.isNull(liveAlarmTime)
                 ? ""
-                : TimeUtil.utc2Local(info.alarm_time, zoneId),
-            clear_time: COMMON_UTIL.isNull(info.clear_time)
+                : TimeUtil.utc2Local(liveAlarmTime, zoneId),
+            clear_time: COMMON_UTIL.isNull(liveClearTime)
                 ? ""
-                : TimeUtil.utc2Local(info.clear_time, zoneId),
-            root_cause: info.root_cause,
-            sub_root_cause: info.sub_root_cause,
+                : TimeUtil.utc2Local(liveClearTime, zoneId),
+            root_cause: liveRootCause,
+            sub_root_cause: liveSubRootCause,
             rca_description: info.rca_description,
             predictive_etr: info.predictive_etr,
-            estimated_cp: info.tt_domain != "FTTH" ? "-" : info.estimated_cp,
-            alarm_status: COMMON_UTIL.isNull(info.clear_time)
+            estimated_cp: info.tt_domain != "FTTH" ? "-" : liveEstimatedCp,
+            alarm_status: COMMON_UTIL.isNull(liveClearTime)
                 ? "OPEN"
                 : "Related To The Clear Time",
-            aging_time: getAgingTime(info.alarm_time, timeUTC7),
-            tt_action: info.tt_action,
+            aging_time: getAgingTime(liveAlarmTime, timeUTC7),
+            tt_action: liveAction,
             tt_domain: info.tt_domain,
         });
     }
@@ -78,7 +87,15 @@ function getAgingTime(alarmTime, timeUTC7) {
 function getTTList() {
     let tql = `select distinct inc.orderid, inc.tt_domain, inc.title, inc.cm_orderid, inc.inter_station, inc.pic,
             inc.alarm_time, inc.root_cause, inc.sub_root_cause, inc.rca_description, inc.predictive_etr,
-            inc.estimated_cp, tt.ticketstatus, inc.tt_action, tt.closetime as clear_time
+            inc.estimated_cp, inc.tt_action,
+            tt.ticketstatus,
+            tt.title as tt_live_title,
+            tt.createfaultfirstoccurtime as tt_live_alarm_time,
+            tt.closetime as tt_live_clear_time,
+            tt.root_cause as tt_live_root_cause,
+            tt.sub_root_cause as tt_live_sub_root_cause,
+            tt.incident_chronology as tt_live_action,
+            tt.estimated_cp as tt_live_estimated_cp
             from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor" as inc
             left join "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt on inc.orderid = tt.orderid
             where inc.active = true 
