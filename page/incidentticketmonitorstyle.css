@@ -1,7 +1,7 @@
 .custom-dashboard-wrapper {
   --custom-bg: #09090b;
-  --custom-card: #0d0d10;
-  --custom-card-inner: #141417;
+  --custom-card: #111115;
+  --custom-card-inner: #18181c;
   --custom-border: #27272a;
   --custom-border-hover: #3f3f46;
   --custom-text-primary: #fafafa;
@@ -289,18 +289,21 @@
 .custom-wo-card {
   background-color: var(--custom-card);
   border: 1px solid var(--custom-border);
+  border-top: 3px solid #3b82f6;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 860px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .custom-wo-card:hover {
   border-color: var(--custom-border-hover);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border-top-color: #60a5fa;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .custom-wo-card-header {
@@ -308,7 +311,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
-  background-color: #121215;
+  background-color: #16161b;
   border-bottom: 1px solid var(--custom-border);
   gap: 10px;
   flex-shrink: 0;
