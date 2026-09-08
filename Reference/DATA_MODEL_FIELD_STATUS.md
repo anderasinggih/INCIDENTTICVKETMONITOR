@@ -15,7 +15,7 @@ Sejak dashboard dikonfigurasi untuk **membaca langsung (live fetch)** secara rea
 | 2 | `active` | **AKTIF** | `incwo_incidentticketmonitor` | Flag aktif/tidaknya tiket di watchlist (`true` = tampil, `false` = dihapus). |
 | 3 | `tt_domain` | **AKTIF** | `incwo_incidentticketmonitor` | Kategori domain tab dashboard (`FWA` / `FTTH`). |
 | 4 | `create_time` | **AKTIF** | `incwo_incidentticketmonitor` | Waktu tiket ditambahkan ke monitor (dasar sorting kartu). |
-| 5 | `pic` | **AKTIF** | `incwo_incidentticketmonitor` | **Custom Field**: Nama PIC Contractor penanggung jawab (tidak ada di OWS). |
+| 5 | `pic` | **TIDAK TERPAKAI** | `tt_troubleticket.responsibility` | Digantikan live fetch dari field `responsibility` di tiket utama OWS (read-only di popup). |
 | 6 | `cm_orderid` | **AKTIF** | `incwo_incidentticketmonitor` | Nomor Change Management hasil parsing saat create. |
 | 7 | `inter_station` | **AKTIF** | `incwo_incidentticketmonitor` | Keterangan segmen link / lokasi inter-station terdampak. |
 | 8 | `rca_description` | **AKTIF** | `incwo_incidentticketmonitor` | Ringkasan narasi analisis akar masalah. |

@@ -35,6 +35,7 @@ function main() {
             ttInfo.title = COMMON_UTIL.isNull(liveResult.title) ? "" : liveResult.title;
             ttInfo.root_cause = COMMON_UTIL.isNull(liveResult.root_cause) ? "" : liveResult.root_cause;
             ttInfo.sub_root_cause = COMMON_UTIL.isNull(liveResult.sub_root_cause) ? "" : liveResult.sub_root_cause;
+            ttInfo.pic = COMMON_UTIL.isNull(liveResult.responsibility) ? "" : liveResult.responsibility;
             if (!COMMON_UTIL.isNull(liveResult.estimated_cp)) {
                 ttInfo.estimated_cp = liveResult.estimated_cp;
             }

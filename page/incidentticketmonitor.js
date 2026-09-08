@@ -271,10 +271,8 @@
             '    <form id="incwoDetailForm" class="custom-detail-form" onsubmit="window.saveDetail(event)">' +
             '      <div class="custom-modal-body custom-modal-scrollable">' +
             '        <div class="custom-modal-field">' +
-            '          <label class="custom-modal-label">PIC (Contractor)</label>' +
-            '          <select class="custom-form-select" id="incwoDetailPic">' +
-            '            <option value="">Please Select</option>' +
-            '          </select>' +
+            '          <label class="custom-modal-label">PIC Assign (Responsibility)</label>' +
+            '          <input type="text" class="custom-form-input" id="incwoDetailPic" readonly disabled placeholder="No PIC Assigned" />' +
             '        </div>' +
             '        <div class="custom-modal-field custom-modal-field-grow">' +
             '          <label class="custom-modal-label">Action</label>' +
@@ -480,6 +478,7 @@
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Clear Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(clearTime) + '</span></div>';
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Aging Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(agingTime) + '</span></div>';
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Status</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(alarmStatus) + '</span></div>';
+            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
             html += '    </div>';
 
@@ -843,23 +842,9 @@
         var actionElem = document.getElementById("incwoDetailAction");
         if (actionElem) actionElem.value = extractOWSField(detail.tt_action);
 
-        var picSelect = document.getElementById("incwoDetailPic");
-        if (picSelect) {
-            var currentPic = extractOWSField(detail.pic);
-            var picHtml = '<option value="">Please Select</option>';
-            for (var p = 0; p < state.picList.length; p++) {
-                var contractor = extractOWSField(state.picList[p].contractor_name);
-                var selected = contractor === currentPic ? " selected" : "";
-                picHtml +=
-                    '<option value="' +
-                    escapeHtml(contractor) +
-                    '"' +
-                    selected +
-                    ">" +
-                    escapeHtml(contractor) +
-                    "</option>";
-            }
-            picSelect.innerHTML = picHtml;
+        var picElem = document.getElementById("incwoDetailPic");
+        if (picElem) {
+            picElem.value = extractOWSField(detail.pic) || "No PIC Assigned";
         }
     }
 

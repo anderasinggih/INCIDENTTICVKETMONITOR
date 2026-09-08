@@ -36,13 +36,14 @@ function main() {
         let liveSubRootCause = COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? "" : info.tt_live_sub_root_cause;
         let liveAction = COMMON_UTIL.isNull(info.tt_live_action) ? "" : info.tt_live_action;
         let liveEstimatedCp = COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? "" : info.tt_live_estimated_cp;
+        let livePic = COMMON_UTIL.isNull(info.tt_live_pic) ? "" : info.tt_live_pic;
 
         list.push({
             id: info.orderid,
             title: liveTitle,
             cm_orderid: info.cm_orderid,
             inter_station: info.inter_station,
-            pic: info.pic,
+            pic: livePic,
             ticket_status: info.ticketstatus,
             alarm_time: COMMON_UTIL.isNull(liveAlarmTime)
                 ? ""
@@ -95,7 +96,8 @@ function getTTList() {
             tt.root_cause as tt_live_root_cause,
             tt.sub_root_cause as tt_live_sub_root_cause,
             tt.incident_chronology as tt_live_action,
-            tt.estimated_cp as tt_live_estimated_cp
+            tt.estimated_cp as tt_live_estimated_cp,
+            tt.responsibility as tt_live_pic
             from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor" as inc
             left join "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt on inc.orderid = tt.orderid
             where inc.active = true 
