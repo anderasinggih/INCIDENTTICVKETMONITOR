@@ -35,7 +35,8 @@ function main() {
             ttInfo.title = COMMON_UTIL.isNull(liveResult.title) ? "" : liveResult.title;
             ttInfo.root_cause = COMMON_UTIL.isNull(liveResult.root_cause) ? "" : liveResult.root_cause;
             ttInfo.sub_root_cause = COMMON_UTIL.isNull(liveResult.sub_root_cause) ? "" : liveResult.sub_root_cause;
-            ttInfo.pic = COMMON_UTIL.isNull(liveResult.responsibility) ? "" : liveResult.responsibility;
+            let respId = COMMON_UTIL.isNull(liveResult.responsibility) ? "" : liveResult.responsibility;
+            ttInfo.pic = getVendorName(respId);
             if (!COMMON_UTIL.isNull(liveResult.estimated_cp)) {
                 ttInfo.estimated_cp = liveResult.estimated_cp;
             }
@@ -49,4 +50,31 @@ function main() {
     }
 
     return { data: ttInfo };
+}
+
+function getVendorName(vendorId) {
+    if (COMMON_UTIL.isNull(vendorId)) {
+        return "";
+    }
+    let tql = `select name, label from "/DataSource/msup_customization_options/customization_options_vendor" where id = $id`;
+    let request = {
+        start: 0,
+        limit: 1,
+        tql: tql,
+        parameters: { id: vendorId },
+        contains_total: false,
+    };
+    try {
+        var response = ServiceInvoker.post(
+            "/adc-model/rest/v2/model-instances/query-by-tql",
+            request
+        );
+        if (!COMMON_UTIL.isNull(response.results) && response.results.length > 0) {
+            let row = response.results[0];
+            return row.name || row.label || vendorId;
+        }
+    } catch (e) {
+        console.error(PREFIX + " getVendorName failed: " + e);
+    }
+    return vendorId;
 }
