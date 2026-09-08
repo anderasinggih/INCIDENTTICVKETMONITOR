@@ -1,0 +1,21 @@
+﻿contact,isactual,label,mail,name,phone,vendorcode,id,keycode,actual_model_id,active,change_time
+	,	,FiberHome,	,FiberHome,	,	,0b5f02b9-ed39-11f0-9f6a-0255ac121583,FiberHome,	,true,	1767948970818
+	,	,Comnect,	,Comnect,	,	,19f8313f-ed39-11f0-bbb7-0255ac120452,Comnect,	,true,	1767948995310
+	,	,ISP,	,ISP,	,	,22972c72-4e87-11f1-8b4b-0255ac12102e,ISP,	,true,	1778647773308
+	,	,YNet,	,YNet,	,	,29fb01f6-ed39-11f0-803b-0255ac122060,YNet,	,true,	1767949022172
+	,	,OREX SAI,	,OREX SAI,	,	,3166e140-ed39-11f0-95f9-0255ac120037,OREX SAI,	,true,	1779936694550
+	,	,Baicells,	,Baicells,	,	,3c1c944e-ed39-11f0-95f9-0255ac120037,Baicells,	,true,	1767949052591
+	,	,MicroTik,	,MicroTik,	,	,47fa6464-541e-11f1-8d7d-0255ac1209a9,MicroTik,	,true,	1779262445854
+	,	,CICT mobile,	,CICT mobile,	,	,4a3d5f1b-ed39-11f0-9e05-0255ac122052,CICT mobile,	,true,	1767949076294
+	,	,Common,	,Common,	,	,52db7aff-5423-11f1-b35e-0255ac12003d,Common,	,true,	1779264611590
+	,	,Protelindo,	,Protelindo,	,	,53fc2e87-ed39-11f0-9e05-0255ac122052,Protelindo,	,true,	1767949092644
+	,	,OrexSai,	,OrexSai,	,	,58476811-541f-11f1-b35e-0255ac12003d,OrexSai,	,false,	1779936682020
+	,	,Tower Bersama,	,Tower Bersama,	,	,5aed389a-ed39-11f0-9388-0255ac1200af,Tower Bersama,	,true,	1767949104290
+	,	,Centratama,	,Centratama,	,	,61d9603e-ed39-11f0-803b-0255ac122060,Centratama,	,true,	1767949115904
+	,	,Persada,	,Persada,	,	,67a3c491-ed39-11f0-ae8e-0255ac12157b,Persada,	,true,	1767949125619
+	,	,IFORTE,	,IFORTE,	,	,67ebe504-7365-11f1-840a-0255ac12102e,IFORTE,	,true,	1782701479760
+test,	,test,	,test,	,	,6bf0d20a-5f21-11f1-ae90-0255ac121a11,test,	,true,	1780473257470
+	,	,Telkom Akses,	,Telkom Akses,	,	,731f9b37-707d-11f1-8686-0255ac120033,Telkom Akses,	,true,	1782381952987
+	,	,Viberlink,	,Viberlink,	,	,795f0f40-7365-11f1-93e1-0255ac120577,Viberlink,	,true,	1782701509036
+	,	,Triasmitra,	,Triasmitra,	,	,8180a97b-7365-11f1-840a-0255ac12102e,Triasmitra,	,true,	1782701522678
+	,	,TBG,	,TBG,	,	,909486cf-7365-11f1-93aa-0255ac120835,TBG,	,true,	1782701547974

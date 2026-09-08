@@ -97,7 +97,7 @@ function getTTList() {
             tt.sub_root_cause as tt_live_sub_root_cause,
             tt.incident_chronology as tt_live_action,
             tt.estimated_cp as tt_live_estimated_cp,
-            COALESCE(v.name, v.label, tt.responsibility) as tt_live_pic
+            coalesce(v.name, v.label, tt.responsibility) as tt_live_pic
             from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor" as inc
             left join "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt on inc.orderid = tt.orderid
             left join "/DataSource/msup_customization_options/customization_options_vendor" as v on tt.responsibility = v.id
