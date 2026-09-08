@@ -17,7 +17,6 @@ function main() {
     let fwaNum = 0;
     let ftthNum = 0;
     let list = [];
-    let vendorMap = getVendorMap();
 
     for (let i = 0; i < results.length; i++) {
         let info = results[i];
@@ -37,8 +36,18 @@ function main() {
         let liveSubRootCause = COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? "" : info.tt_live_sub_root_cause;
         let liveAction = COMMON_UTIL.isNull(info.tt_live_action) ? "" : info.tt_live_action;
         let liveEstimatedCp = COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? "" : info.tt_live_estimated_cp;
-        let respId = COMMON_UTIL.isNull(info.tt_live_pic) ? "" : info.tt_live_pic;
-        let livePic = (!COMMON_UTIL.isNull(respId) && vendorMap[respId]) ? vendorMap[respId] : respId;
+        
+        // Ambil nama vendor hasil join, fallback ke label, lalu ke responsibility/pic jika kosong
+        let livePic = "";
+        if (!COMMON_UTIL.isNull(info.vendor_name)) {
+            livePic = info.vendor_name;
+        } else if (!COMMON_UTIL.isNull(info.vendor_label)) {
+            livePic = info.vendor_label;
+        } else if (!COMMON_UTIL.isNull(info.responsibility)) {
+            livePic = info.responsibility;
+        } else {
+            livePic = COMMON_UTIL.isNull(info.pic) ? "" : info.pic;
+        }
 
         list.push({
             id: info.orderid,
@@ -99,9 +108,12 @@ function getTTList() {
             tt.sub_root_cause as tt_live_sub_root_cause,
             tt.incident_chronology as tt_live_action,
             tt.estimated_cp as tt_live_estimated_cp,
-            tt.responsibility as tt_live_pic
+            tt.responsibility,
+            v.name as vendor_name,
+            v.label as vendor_label
             from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor" as inc
             left join "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt on inc.orderid = tt.orderid
+            left join "/DataSource/msup_customization_options/customization_options_vendor" as v on tt.responsibility = v.id
             where inc.active = true 
             order by inc.tt_domain, inc.create_time DESC
            `;
@@ -124,35 +136,4 @@ function getTTList() {
         console.error(PREFIX + " getTTList failed: " + e);
     }
     return [];
-}
-
-// Mengambil mapping ID vendor -> Name vendor dari customization_options_vendor
-function getVendorMap() {
-    let map = {};
-    let tql = `select id, name, label from "/DataSource/msup_customization_options/customization_options_vendor" where active = true`;
-    let request = {
-        start: 0,
-        limit: 1000,
-        tql: tql,
-        parameters: {},
-        contains_total: false,
-    };
-    try {
-        var response = ServiceInvoker.post(
-            "/adc-model/rest/v2/model-instances/query-by-tql",
-            request
-        );
-        if (!COMMON_UTIL.isNull(response.results)) {
-            let rows = response.results;
-            for (let i = 0; i < rows.length; i++) {
-                let row = rows[i];
-                if (row && row.id) {
-                    map[row.id] = row.name || row.label || row.id;
-                }
-            }
-        }
-    } catch (e) {
-        console.error(PREFIX + " getVendorMap failed: " + e);
-    }
-    return map;
 }
