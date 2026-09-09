@@ -11,14 +11,18 @@ try {
 
 function main() {
     let domain = _message.domain;
+    let orderid = _message.orderid;
     let domainCondition = "";
 
+    // Jika user mencari orderid spesifik, prioritaskan orderid
+    if (!COMMON_UTIL.isNull(orderid)) {
+        domainCondition += ` and tt.orderid like '%${String(orderid).trim()}%'`;
+    }
+
     if (!COMMON_UTIL.isNull(domain) && domain === "FTTH") {
-        domainCondition = ` and (d.name like '%FTTH%')`;
+        domainCondition += ` and (d.name like '%FTTH%')`;
     } else if (!COMMON_UTIL.isNull(domain) && domain === "FWA") {
-        domainCondition = ` and (d.name like '%FWA%')`;
-    } else {
-        domainCondition = ` and (d.name like '%FWA%' or d.name like '%FTTH%')`;
+        domainCondition += ` and (d.name like '%FWA%')`;
     }
 
     let ttList = getRunningTickets(domainCondition);
@@ -42,7 +46,7 @@ function getRunningTickets(domainCondition) {
            `;
         let request = {
             start: 0,
-            limit: 100,
+            limit: 1000,
             tql: tql,
             parameters: {},
             contains_total: false,
