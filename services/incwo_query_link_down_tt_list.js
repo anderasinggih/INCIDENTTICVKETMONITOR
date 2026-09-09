@@ -14,11 +14,11 @@ function main() {
     let domainCondition = "";
 
     if (!COMMON_UTIL.isNull(domain) && domain === "FTTH") {
-        domainCondition = ` and (d.name = 'FTTH' or d.name like '%FTTH%')`;
+        domainCondition = ` and (d.name like '%FTTH%' or tt.domain like '%FTTH%')`;
     } else if (!COMMON_UTIL.isNull(domain) && domain === "FWA") {
-        domainCondition = ` and (d.name = 'FWA' or d.name like '%FWA%')`;
+        domainCondition = ` and (d.name like '%FWA%' or tt.domain like '%FWA%')`;
     } else {
-        domainCondition = ` and (d.name like '%FWA%' or d.name like '%FTTH%')`;
+        domainCondition = ` and (d.name like '%FWA%' or tt.domain like '%FWA%' or d.name like '%FTTH%' or tt.domain like '%FTTH%')`;
     }
 
     let ttList = getRunningTickets(domainCondition);
@@ -33,7 +33,8 @@ function getRunningTickets(domainCondition) {
     try {
         let tql = `select orderid, tickettype, ticketstatus as ticket_status, title,
             createtime, createfaultfirstoccurtime as alarm_time,
-            faultresolvingtime as clear_time, root_cause, sub_root_cause, d.name as domain
+            faultresolvingtime as clear_time, root_cause, sub_root_cause, 
+            coalesce(d.name, tt.domain) as domain
             from "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt
             left join "/datahub/cmdb/cmdb_domain" as d on d.id = tt.domain 
             where ticketstatus = 'running' 
