@@ -53,23 +53,12 @@ function main() {
         };
     }
 
-    // Normalisasi domain input dan domain tiket asli (FWA RAN, FWA Core -> FWA)
-    let ticketDomain = COMMON_UTIL.isNull(ttInfo.domain) ? "" : String(ttInfo.domain).trim();
-    let ticketGroup = ticketDomain.indexOf("FTTH") !== -1 ? "FTTH" : "FWA";
-
-    if (ticketDomain !== "" && ticketGroup !== domain && ticketDomain !== domain) {
-        return {
-            code: 500,
-            error: false,
-            message:
-                "orderid: " +
-                orderid +
-                " domain is " +
-                ticketDomain +
-                " is not in group " +
-                domain,
-        };
-    }
+    // Normalisasi domain: tiket yang mengandung kata FTTH masuk ke FTTH, selain itu otomatis FWA (FWA-RAN, FWA Core, RAN, dll.)
+    let ticketDomain = COMMON_UTIL.isNull(ttInfo.domain) ? (COMMON_UTIL.isNull(ttInfo.raw_domain) ? "" : String(ttInfo.raw_domain).trim()) : String(ttInfo.domain).trim();
+    let determinedDomain = ticketDomain.toUpperCase().indexOf("FTTH") !== -1 ? "FTTH" : "FWA";
+    
+    // Gunakan domain yang terdeteksi dari tiket, atau fallback ke domain input
+    let finalDomain = !COMMON_UTIL.isNull(determinedDomain) ? determinedDomain : domain;
 
     let associateorderid = ttInfo.associateorderid;
     let cm_orderid = "";
@@ -105,7 +94,7 @@ function main() {
             inter_station: "",
             rca_description: ttInfo.initial_rca,
             estimated_cp: ttInfo.estimated_cp,
-            tt_domain: domain,
+            tt_domain: finalDomain,
             ticket_status: ttInfo.ticket_status,
             active: true,
             tt_action: ttInfo.tt_action,
@@ -128,7 +117,8 @@ function main() {
 
 function getTTInfo(orderid) {
     let tql = `select orderid,tickettype,ticketstatus as ticket_status,title, associateorderid,createtime,createfaultfirstoccurtime as alarm_time,
-            faultresolvingtime as clear_time,root_cause,sub_root_cause,link_segment,initial_rca,estimated_cp,incident_chronology as tt_action,d.name as domain
+            faultresolvingtime as clear_time,root_cause,sub_root_cause,link_segment,initial_rca,estimated_cp,incident_chronology as tt_action,
+            tt.domain as raw_domain, d.name as domain
             from "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt
             left join "/datahub/cmdb/cmdb_domain" d on d.id=tt.domain 
             where orderid = $orderid and ticketstatus ='running'
