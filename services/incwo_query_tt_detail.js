@@ -35,6 +35,7 @@ function main() {
             ttInfo.title = COMMON_UTIL.isNull(liveResult.title) ? "" : liveResult.title;
             ttInfo.root_cause = COMMON_UTIL.isNull(liveResult.root_cause) ? "" : liveResult.root_cause;
             ttInfo.sub_root_cause = COMMON_UTIL.isNull(liveResult.sub_root_cause) ? "" : liveResult.sub_root_cause;
+            ttInfo.impactsitelist = COMMON_UTIL.isNull(liveResult.impactsitelist) ? "" : liveResult.impactsitelist;
             let respId = COMMON_UTIL.isNull(liveResult.responsibility) ? "" : liveResult.responsibility;
             ttInfo.pic = getVendorName(respId);
             if (!COMMON_UTIL.isNull(liveResult.estimated_cp)) {

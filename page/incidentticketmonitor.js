@@ -453,6 +453,7 @@
             var alarmStatus = extractOWSField(ticket.alarm_status) || "-";
             var rootCause = extractOWSField(ticket.root_cause) || "-";
             var subRootCause = extractOWSField(ticket.sub_root_cause) || "-";
+            var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
             var predictiveEtr = extractOWSField(ticket.predictive_etr) || "-";
             var estimatedCp = domain === "FTTH" ? (extractOWSField(ticket.estimated_cp) || "-") : "-";
             var action = extractOWSField(ticket.tt_action) || "-";
@@ -480,6 +481,7 @@
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Status</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(alarmStatus) + '</span></div>';
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
             html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
+            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
             html += '    </div>';
 
             html += '    <div class="custom-detail-section custom-detail-section-flex">';

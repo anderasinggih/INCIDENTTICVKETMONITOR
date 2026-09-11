@@ -34,6 +34,7 @@ function main() {
         let liveClearTime = COMMON_UTIL.isNull(info.tt_live_clear_time) ? "" : info.tt_live_clear_time;
         let liveRootCause = COMMON_UTIL.isNull(info.tt_live_root_cause) ? "" : info.tt_live_root_cause;
         let liveSubRootCause = COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? "" : info.tt_live_sub_root_cause;
+        let liveImpactSiteList = COMMON_UTIL.isNull(info.tt_live_impactsitelist) ? "" : info.tt_live_impactsitelist;
         let liveAction = COMMON_UTIL.isNull(info.tt_live_action) ? "" : info.tt_live_action;
         let liveEstimatedCp = COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? "" : info.tt_live_estimated_cp;
         let livePic = !COMMON_UTIL.isNull(info.vendor_name)
@@ -57,6 +58,7 @@ function main() {
                 : TimeUtil.utc2Local(liveClearTime, zoneId),
             root_cause: liveRootCause,
             sub_root_cause: liveSubRootCause,
+            impactsitelist: liveImpactSiteList,
             rca_description: info.rca_description,
             predictive_etr: info.predictive_etr,
             estimated_cp: info.tt_domain != "FTTH" ? "-" : (liveEstimatedCp || "-"),
@@ -99,6 +101,7 @@ function getTTList() {
             tt.closetime as tt_live_clear_time,
             tt.root_cause as tt_live_root_cause,
             tt.sub_root_cause as tt_live_sub_root_cause,
+            tt.impactsitelist as tt_live_impactsitelist,
             tt.incident_chronology as tt_live_action,
             tt.estimated_cp as tt_live_estimated_cp,
             v.name as vendor_name,
