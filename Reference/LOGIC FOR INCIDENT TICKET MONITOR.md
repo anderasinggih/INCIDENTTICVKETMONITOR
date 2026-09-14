@@ -318,3 +318,40 @@ Log tindakan teknis (`incident_chronology`) dipecah baris per baris. Jika baris 
 4. **TQL Parser Constraint**:
    - Hindari penggunaan fungsi `COALESCE()` pada TQL ADC karena parser SQL ADC menolaknya; lakukan coalescing nilai null di JavaScript backend service.
    - Hindari filter domain yang terlalu ketat (`= 'FWA'`); gunakan `LIKE '%FWA%'` untuk mengakomodasi penamaan varian sub-domain dari OSS.
+
+---
+
+## 7. Daftar Path Data Model (OWS / ADC TQL Models)
+
+Berikut adalah daftar seluruh path entity data model yang digunakan dalam kueri TQL maupun rest service OWS pada modul **Incident Ticket Monitor** beserta field-field kuncinya:
+
+### 7.1. Trouble Ticket & Core Operations
+
+| No | Path Data Model | Alias Umum | Penjelasan & Fungsi | Field Kunci yang Digunakan |
+| :---: | :--- | :---: | :--- | :--- |
+| 1 | `"/TroubleTicket/TroubleTicket/tt_troubleticket"` | `tt` | Master tiket gangguan operasional NOC (Single Source of Truth) | `id`, `orderid`, `tickettype`, `ticketstatus` *(`'running'`, `'completed'`)*, `title`, `domain`, `createtime`, `createfaultfirstoccurtime` *(alarm time)*, `closetime` *(clear time)*, `faultresolvingtime`, `root_cause`, `sub_root_cause`, `impactsitelist`, `incident_chronology` *(action timeline)*, `estimated_cp`, `responsibility` *(UUID vendor)*, `associateorderid`, `initial_rca`, `link_segment` |
+
+### 7.2. CMDB (Configuration Management Database) & Data Source
+
+| No | Path Data Model | Alias Umum | Penjelasan & Fungsi | Field Kunci yang Digunakan |
+| :---: | :--- | :---: | :--- | :--- |
+| 1 | `"/DataSource/msup_customization_options/customization_options_vendor"` | `v` | Master data pilihan vendor / kontraktor lapangan OWS | `id`, `name`, `label`, `value`, `keycode`, `active` |
+| 2 | `"/datahub/cmdb/cmdb_domain"` | `d` | Master klasifikasi domain jaringan OSS (FWA, FTTH, RAN, IP, dll.) | `id`, `name`, `keycode`, `label` |
+
+### 7.3. Local Dashboard Model (Incident Ticket Monitor)
+
+| No | Path Data Model | Alias Umum | Penjelasan & Fungsi | Field Kunci yang Digunakan |
+| :---: | :--- | :---: | :--- | :--- |
+| 1 | `"/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor"` | `inc` | Tabel lokal penyimpanan watchlist tiket aktif dashboard | `orderid` *(Primary/Join Key)*, `active` *(Soft Delete Flag)*, `tt_domain` *(Kategori Filter FWA/FTTH)*, `create_time` *(Sorting Time)*, `cm_orderid`, `inter_station`, `rca_description`, `predictive_etr`, `pic`, `title`, `alarm_time`, `clear_time`, `root_cause`, `sub_root_cause`, `estimated_cp`, `tt_action` |
+
+---
+
+## 8. Diagram Relasi Path Data Model (ERD Hubungan Tabel)
+
+```mermaid
+erDiagram
+    incwo_incidentticketmonitor ||--|| tt_troubleticket : "inc.orderid = tt.orderid"
+    tt_troubleticket }o--|| customization_options_vendor : "tt.responsibility = v.id"
+    tt_troubleticket }o--|| cmdb_domain : "tt.domain = d.id"
+```
+
