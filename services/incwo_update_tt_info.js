@@ -10,12 +10,13 @@ try {
 }
 
 function main() {
-    let orderid = _message.orderid;
-    let ttInfo = _message.data;
+    let orderid = COMMON_UTIL.isNull(_message.orderid) ? "" : String(_message.orderid).trim();
+    let ttInfo = _message.data || {};
+    let targetOrderId = COMMON_UTIL.isNull(ttInfo.orderid) ? orderid : String(ttInfo.orderid).trim();
 
-    // 1. UPDATE HANYA KE DATA MODEL LOKAL DASHBOARD (incwo_incidentticketmonitor)
+    // 1. UPDATE KE DATA MODEL LOKAL DASHBOARD (incwo_incidentticketmonitor)
     let requestLocal = {
-        orderid: ttInfo.orderid,
+        orderid: targetOrderId,
         pic: ttInfo.pic,
         root_cause: ttInfo.root_cause,
         sub_root_cause: ttInfo.sub_root_cause,
@@ -29,18 +30,25 @@ function main() {
 
     updateLocalDashboard(requestLocal);
 
-    // 2. SINKRONISASI HANYA FIELD incident_chronology KE TIKET UTAMA
-    var requestRequest = { orderid: orderid };
-    var troubleTicket = ServiceInvoker.post(
-        "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_get",
-        requestRequest
-    );
+    // 2. SINKRONISASI KE TIKET UTAMA (PMA vs INC)
+    let isPMA = targetOrderId.startsWith("PMA-") || orderid.startsWith("PMA-");
+    if (isPMA) {
+        // Jalur Problem Management Activity (PMA)
+        updatePMAActivity(targetOrderId, ttInfo.tt_action);
+    } else {
+        // Jalur Incident Trouble Ticket (INC)
+        var requestRequest = { orderid: orderid };
+        var troubleTicket = ServiceInvoker.post(
+            "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_get",
+            requestRequest
+        );
 
-    if (!COMMON_UTIL.isNull(troubleTicket) && !COMMON_UTIL.isNull(troubleTicket.result)) {
-        let incidentChronology = troubleTicket.result.incident_chronology;
+        if (!COMMON_UTIL.isNull(troubleTicket) && !COMMON_UTIL.isNull(troubleTicket.result)) {
+            let incidentChronology = troubleTicket.result.incident_chronology;
 
-        if (incidentChronology != ttInfo.tt_action) {
-            updateTroubleTicket(orderid, ttInfo.tt_action);
+            if (incidentChronology != ttInfo.tt_action) {
+                updateTroubleTicket(orderid, ttInfo.tt_action);
+            }
         }
     }
 
@@ -59,7 +67,7 @@ function updateLocalDashboard(request) {
     }
 }
 
-// Sinkronisasi HANYA field incident_chronology ke tiket utama
+// Sinkronisasi HANYA field incident_chronology ke tiket utama Incident
 function updateTroubleTicket(orderId, incidentChronology) {
     try {
         var request = {
@@ -72,5 +80,21 @@ function updateTroubleTicket(orderId, incidentChronology) {
         );
     } catch (e) {
         console.error(PREFIX + "updateTroubleTicket Error: " + e.message);
+    }
+}
+
+// Sinkronisasi field resolution_notes ke Problem Management Activity (PMA)
+function updatePMAActivity(orderId, resolutionNotes) {
+    try {
+        var request = {
+            order_id: String(orderId).trim(),
+            resolution_notes: resolutionNotes,
+        };
+        ServiceInvoker.post(
+            "/adc-service/rest/v1/services/ProblemManagementActivity/ProblemManagementActivity/pma_problemmanagementactivity_update",
+            request
+        );
+    } catch (e) {
+        console.error(PREFIX + "updatePMAActivity Error: " + e.message);
     }
 }

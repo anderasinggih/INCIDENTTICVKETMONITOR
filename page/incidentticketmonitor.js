@@ -30,7 +30,6 @@
         tickets: [],
         fwaNum: 0,
         ftthNum: 0,
-        maxTickets: 8,
         loading: false,
         picList: [],
         runningTickets: [],
@@ -161,8 +160,15 @@
             '<span class="custom-domain-stat-label">FTTH</span>' +
             '<span class="custom-domain-stat-value" id="incwoStatFtth">' + (state.ftthNum || 0) + '</span>';
 
+        var pmaBadge = document.createElement("div");
+        pmaBadge.className = "custom-domain-stat-badge pma";
+        pmaBadge.innerHTML =
+            '<span class="custom-domain-stat-label">PMA</span>' +
+            '<span class="custom-domain-stat-value" id="incwoStatPma">' + (state.pmaNum || 0) + '</span>';
+
         metricsDiv.appendChild(fwaBadge);
         metricsDiv.appendChild(ftthBadge);
+        metricsDiv.appendChild(pmaBadge);
 
         var lastUpdated = document.createElement("span");
         lastUpdated.id = "incwoLastUpdated";
@@ -180,7 +186,8 @@
         var filters = [
             { key: "ALL", label: "All" },
             { key: "FWA", label: "FWA" },
-            { key: "FTTH", label: "FTTH" }
+            { key: "FTTH", label: "FTTH" },
+            { key: "PMA", label: "PMA" }
         ];
 
         filters.forEach(function (f) {
@@ -227,10 +234,11 @@
             '    <form id="incwoAddForm" onsubmit="window.submitAddTicket(event)">' +
             '      <div class="custom-modal-body">' +
             '        <div class="custom-modal-field">' +
-            '          <label class="custom-modal-label">Domain</label>' +
-            '          <select class="custom-form-select" id="incwoAddDomain" required>' +
+            '          <label class="custom-modal-label">Domain / Type</label>' +
+            '          <select class="custom-form-select" id="incwoAddDomain" onchange="window.onAddDomainChange()" required>' +
             '            <option value="FWA">FWA</option>' +
             '            <option value="FTTH">FTTH</option>' +
+            '            <option value="PMA">PMA (Problem Management Activity)</option>' +
             '          </select>' +
             '        </div>' +
             '        <div class="custom-modal-field">' +
@@ -273,6 +281,18 @@
             '        <div class="custom-modal-field">' +
             '          <label class="custom-modal-label">PIC Assign (Responsibility)</label>' +
             '          <input type="text" class="custom-form-input" id="incwoDetailPic" readonly disabled placeholder="No PIC Assigned" />' +
+            '        </div>' +
+            '        <div id="incwoPmaExtraFields" class="custom-pma-extra-fields" style="display: none;">' +
+            '          <div class="custom-pma-plain-row">' +
+            '            <span class="custom-pma-plain-label">Activity Summary</span>' +
+            '            <span class="custom-pma-plain-sep">:</span>' +
+            '            <span class="custom-pma-plain-val" id="incwoDetailActivitySummary">-</span>' +
+            '          </div>' +
+            '          <div class="custom-pma-plain-row">' +
+            '            <span class="custom-pma-plain-label">Activity List</span>' +
+            '            <span class="custom-pma-plain-sep">:</span>' +
+            '            <span class="custom-pma-plain-val" id="incwoDetailNocActivityNotes">-</span>' +
+            '          </div>' +
             '        </div>' +
             '        <div class="custom-modal-field custom-modal-field-grow">' +
             '          <label class="custom-modal-label">Action</label>' +
@@ -382,7 +402,16 @@
             return state.tickets;
         }
         return state.tickets.filter(function (t) {
-            var domain = extractOWSField(t.tt_domain || t.domain).toUpperCase();
+            var orderId = extractOWSField(t.id || t.orderid || "").trim();
+            var domain = extractOWSField(t.tt_domain || t.domain || "").toUpperCase();
+            var isPMA = orderId.startsWith("PMA-") || t.ticket_type === "PMA" || domain === "PMA";
+
+            if (state.currentFilter === "PMA") {
+                return isPMA;
+            }
+            if (isPMA) {
+                return false; // Jangan tampilkan tiket PMA di tab FWA atau FTTH
+            }
             if (state.currentFilter === "FTTH") {
                 return domain.indexOf("FTTH") !== -1;
             }
@@ -398,19 +427,16 @@
         var countElem = document.getElementById("incwoTicketWatchCount");
         var statFwa = document.getElementById("incwoStatFwa");
         var statFtth = document.getElementById("incwoStatFtth");
+        var statPma = document.getElementById("incwoStatPma");
 
         if (statFwa) statFwa.textContent = state.fwaNum || 0;
         if (statFtth) statFtth.textContent = state.ftthNum || 0;
+        if (statPma) statPma.textContent = state.pmaNum || 0;
 
         var filtered = getFilteredTickets();
         if (countElem) {
             countElem.textContent =
                 filtered.length + (filtered.length === 1 ? " ticket" : " tickets");
-        }
-
-        var addBtn = document.getElementById("incwoBtnAddWo");
-        if (addBtn) {
-            addBtn.disabled = state.tickets.length >= state.maxTickets;
         }
 
         if (!container) return;
@@ -425,7 +451,7 @@
             container.innerHTML =
                 '<div class="custom-wo-empty-state">' +
                 '  <div class="custom-wo-empty-icon">&#9638;</div>' +
-                '  <div class="custom-wo-empty-title">No Incident Tickets Found</div>' +
+                '  <div class="custom-wo-empty-title">No Work Orders Found</div>' +
                 '  <div class="custom-wo-empty-desc">Click "+ Add Work Order" to create or monitor critical tickets.</div>' +
                 "</div>";
             return;
@@ -439,30 +465,24 @@
             var status = extractOWSField(ticket.ticket_status || ticket.alarm_status || "-");
             var statusClass = getStatusClass(status);
 
+            var isPMA = orderId.startsWith("PMA-") || ticket.ticket_type === "PMA" || String(domain).toUpperCase() === "PMA";
             var isFtth = String(domain).toUpperCase().indexOf("FTTH") !== -1;
-            var domainBadgeClass = isFtth ? "custom-domain-badge ftth" : "custom-domain-badge fwa";
+            var domainBadgeClass = isPMA
+                ? "custom-domain-badge pma"
+                : (isFtth ? "custom-domain-badge ftth" : "custom-domain-badge fwa");
+            var domainLabel = isPMA ? "PMA" : domain;
 
             var title = extractOWSField(ticket.title) || "-";
-            var cm = extractOWSField(ticket.cm_orderid) || "-";
-            var interStation = extractOWSField(ticket.inter_station) || "-";
-            var alarmTime = extractOWSField(ticket.alarm_time) || "-";
-            var clearTime = extractOWSField(ticket.clear_time) || "-";
-            var agingTime = extractOWSField(ticket.aging_time) || "-";
-            var rcaDesc = extractOWSField(ticket.rca_description) || "-";
             var pic = extractOWSField(ticket.pic) || "-";
-            var alarmStatus = extractOWSField(ticket.alarm_status) || "-";
             var rootCause = extractOWSField(ticket.root_cause) || "-";
             var subRootCause = extractOWSField(ticket.sub_root_cause) || "-";
-            var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
-            var predictiveEtr = extractOWSField(ticket.predictive_etr) || "-";
-            var estimatedCp = domain === "FTTH" ? (extractOWSField(ticket.estimated_cp) || "-") : "-";
             var action = extractOWSField(ticket.tt_action) || "-";
 
-            html += '<div class="custom-wo-card">';
+            html += '<div class="custom-wo-card' + (isPMA ? ' custom-wo-card-pma' : '') + '">';
             html += '  <div class="custom-wo-card-header">';
             html += '    <div class="custom-detail-title-group">';
             html += '      <span class="custom-ticket-id">' + escapeHtml(orderId) + '</span>';
-            html += '      <span class="' + domainBadgeClass + '">' + escapeHtml(domain) + '</span>';
+            html += '      <span class="' + domainBadgeClass + '">' + escapeHtml(domainLabel) + '</span>';
             html += '      <span class="custom-status-pill ' + statusClass + '">' + escapeHtml(status) + '</span>';
             html += '    </div>';
             html += '    <div class="custom-wo-header-actions">';
@@ -473,15 +493,40 @@
             html += '  <div class="custom-wo-card-body">';
             html += '    <div class="custom-detail-grid">';
             html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Title</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(title) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">CM Order ID</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(cm) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">PIC Contractor</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(pic) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(alarmTime) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Clear Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(clearTime) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Aging Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(agingTime) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Status</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(alarmStatus) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
-            html += '      <div class="custom-detail-item"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
+
+            if (isPMA) {
+                // Layout Khusus Tiket PMA
+                var ptSource = extractOWSField(ticket.cm_orderid || ticket.problem_ticket_id) || "-";
+                var planStart = extractOWSField(ticket.plan_start_time || ticket.alarm_time) || "-";
+                var planEnd = extractOWSField(ticket.plan_end_time || ticket.clear_time) || "-";
+                var linkSegment = extractOWSField(ticket.link_segment_detail || ticket.inter_station) || "-";
+
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">PT Source</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(ptSource) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">PIC Contractor</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(pic) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Plan Start</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(planStart) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Plan End</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(planEnd) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
+                html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Link Segment</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(linkSegment) + '">' + escapeHtml(linkSegment) + '</span></div>';
+            } else {
+                // Layout Standar Tiket INC
+                var cm = extractOWSField(ticket.cm_orderid) || "-";
+                var alarmTime = extractOWSField(ticket.alarm_time) || "-";
+                var clearTime = extractOWSField(ticket.clear_time) || "-";
+                var agingTime = extractOWSField(ticket.aging_time) || "-";
+                var alarmStatus = extractOWSField(ticket.alarm_status) || "-";
+                var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
+
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">CM Order ID</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(cm) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">PIC Contractor</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(pic) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(alarmTime) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Clear Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(clearTime) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Aging Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(agingTime) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Status</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(alarmStatus) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
+                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
+            }
             html += '    </div>';
 
             html += '    <div class="custom-detail-section custom-detail-section-flex">';
@@ -524,6 +569,7 @@
                 state.tickets = Array.isArray(data) ? data : [];
                 state.fwaNum = res.fwaNum || 0;
                 state.ftthNum = res.ftthNum || 0;
+                state.pmaNum = res.pmaNum || 0;
                 setupHeaderControls();
                 setupFilterSwitcher();
                 setupWorkOrderControls();
@@ -553,12 +599,20 @@
     };
 
     // Add Modal Actions
-    // Fetch running tickets (FWA & FTTH) for Add Modal
-    function fetchRunningTickets() {
+    // Fetch running tickets (FWA, FTTH & PMA) for Add Modal
+    function fetchRunningTickets(domainOpt, keywordOpt) {
         return new Promise(function (resolve) {
+            var reqData = {};
+            if (domainOpt && domainOpt !== "ALL") {
+                reqData.domain = domainOpt;
+            }
+            if (keywordOpt) {
+                reqData.orderid = String(keywordOpt).trim();
+            }
+
             MessageProcessor.process({
                 serviceId: SERVICE_RUNNING_TT,
-                data: {},
+                data: reqData,
                 success: function (res) {
                     var list = [];
                     if (Array.isArray(res)) {
@@ -566,16 +620,32 @@
                     } else if (res && Array.isArray(res.results)) {
                         list = res.results;
                     }
-                    state.runningTickets = list;
-                    resolve(list);
+                    // Gabungkan dengan tiket yang sudah ada di cache agar tidak hilang
+                    var existingMap = {};
+                    (state.runningTickets || []).forEach(function (item) {
+                        if (item && item.orderid) existingMap[String(item.orderid).trim()] = item;
+                    });
+                    list.forEach(function (item) {
+                        if (item && item.orderid) existingMap[String(item.orderid).trim()] = item;
+                    });
+                    state.runningTickets = Object.values(existingMap);
+                    resolve(state.runningTickets);
                 },
                 error: function () {
-                    state.runningTickets = [];
-                    resolve([]);
+                    resolve(state.runningTickets || []);
                 }
             });
         });
     }
+
+    window.onAddDomainChange = function () {
+        var domainSelect = document.getElementById("incwoAddDomain");
+        var dom = domainSelect ? domainSelect.value : "";
+        fetchRunningTickets(dom).then(function () {
+            var input = document.getElementById("incwoAddTicketId");
+            window.renderTicketDropdown(input ? input.value : "");
+        });
+    };
 
     window.renderTicketDropdown = function (query) {
         var dropdown = document.getElementById("incwoAddTicketDropdown");
@@ -604,8 +674,12 @@
 
         displayMatches.forEach(function (t) {
             var rawDomain = extractOWSField(t.domain) || "FWA";
-            var badgeClass = rawDomain.toUpperCase() === "FTTH" ? "custom-autocomplete-badge-ftth" : "custom-autocomplete-badge-fwa";
+            var domUpper = rawDomain.toUpperCase();
             var orderId = extractOWSField(t.orderid);
+            var isPMA = orderId.startsWith("PMA-") || domUpper === "PMA";
+            var badgeClass = isPMA
+                ? "custom-autocomplete-badge-pma"
+                : (domUpper === "FTTH" ? "custom-autocomplete-badge-ftth" : "custom-autocomplete-badge-fwa");
             var title = extractOWSField(t.title);
             var isAdded = existingOrderIds.includes(String(orderId).trim());
 
@@ -615,7 +689,7 @@
                 : ' onclick="window.selectTicketFromDropdown(\'' +
                   escapeHtml(orderId) +
                   "', '" +
-                  escapeHtml(rawDomain) +
+                  escapeHtml(isPMA ? "PMA" : rawDomain) +
                   '\')"';
 
             html +=
@@ -641,7 +715,7 @@
                 '    <span class="custom-autocomplete-badge ' +
                 badgeClass +
                 '">' +
-                escapeHtml(rawDomain) +
+                escapeHtml(isPMA ? "PMA" : rawDomain) +
                 "</span>" +
                 "  </div>" +
                 "</div>";
@@ -657,7 +731,23 @@
 
     window.onAddTicketInput = function (e) {
         var val = e.target.value;
+        var domainSelect = document.getElementById("incwoAddDomain");
+        if (domainSelect) {
+            var cleanVal = (val || "").trim().toUpperCase();
+            if (cleanVal.startsWith("PMA") || cleanVal === "PMA") {
+                domainSelect.value = "PMA";
+            }
+        }
+        var dom = domainSelect ? domainSelect.value : "";
         window.renderTicketDropdown(val);
+
+        // Pencarian live ke server jika user mengetik
+        clearTimeout(state.searchDebounceTimer);
+        state.searchDebounceTimer = setTimeout(function () {
+            fetchRunningTickets(dom, val).then(function () {
+                window.renderTicketDropdown(val);
+            });
+        }, 250);
     };
 
     window.onAddTicketFocus = function (e) {
@@ -673,7 +763,9 @@
         if (input) input.value = orderId;
         if (domainSelect) {
             var domUpper = (domain || "").toUpperCase();
-            if (domUpper.indexOf("FTTH") !== -1) {
+            if (domUpper === "PMA" || (orderId && orderId.toUpperCase().startsWith("PMA-"))) {
+                domainSelect.value = "PMA";
+            } else if (domUpper.indexOf("FTTH") !== -1) {
                 domainSelect.value = "FTTH";
             } else {
                 domainSelect.value = "FWA";
@@ -695,23 +787,21 @@
 
     window.openAddModal = function () {
         renderAddModalDOM();
-        if (state.tickets.length >= state.maxTickets) {
-            showToast("Maximum " + state.maxTickets + " work orders reached. Please delete one first.", false);
-            return;
-        }
 
         var modal = document.getElementById("incwoAddModal");
         var domainSelect = document.getElementById("incwoAddDomain");
         var ticketInput = document.getElementById("incwoAddTicketId");
         var dropdown = document.getElementById("incwoAddTicketDropdown");
 
-        if (domainSelect) domainSelect.value = "FWA";
+        if (domainSelect) {
+            domainSelect.value = (state.currentFilter === "PMA" || state.currentFilter === "FTTH") ? state.currentFilter : "FWA";
+        }
         if (ticketInput) ticketInput.value = "";
         if (dropdown) dropdown.style.display = "none";
         if (modal) modal.style.display = "flex";
 
-        // Preload running tickets for quick selection
-        fetchRunningTickets().then(function () {
+        // Preload seluruh running tickets (INC + PMA) agar dropdown langsung terisi lengkap
+        fetchRunningTickets("").then(function () {
             if (modal && modal.style.display === "flex") {
                 window.renderTicketDropdown("");
             }
@@ -745,6 +835,11 @@
 
         var domain = domainSelect ? domainSelect.value : "";
         var ticketId = ticketInput ? ticketInput.value.trim() : "";
+
+        if (ticketId.toUpperCase().startsWith("PMA-")) {
+            domain = "PMA";
+            if (domainSelect) domainSelect.value = "PMA";
+        }
 
         if (!domain || !ticketId) {
             showToast("Domain and TT Number are required.", false);
@@ -847,6 +942,23 @@
         var picElem = document.getElementById("incwoDetailPic");
         if (picElem) {
             picElem.value = extractOWSField(detail.pic) || "No PIC Assigned";
+        }
+
+        // Tampilkan field Activity Summary & Activity List khusus PMA secara read-only tanpa border
+        var orderIdStr = String(detail.orderid || detail.id || detail.order_id || "").trim().toUpperCase();
+        var isPMA = orderIdStr.startsWith("PMA-") || String(detail.tt_domain || detail.domain || "").toUpperCase() === "PMA";
+        var pmaContainer = document.getElementById("incwoPmaExtraFields");
+
+        if (pmaContainer) {
+            if (isPMA) {
+                pmaContainer.style.display = "flex";
+                var summaryElem = document.getElementById("incwoDetailActivitySummary");
+                var notesElem = document.getElementById("incwoDetailNocActivityNotes");
+                if (summaryElem) summaryElem.textContent = extractOWSField(detail.activity_summary) || "-";
+                if (notesElem) notesElem.textContent = extractOWSField(detail.noc_activity_notes) || "-";
+            } else {
+                pmaContainer.style.display = "none";
+            }
         }
     }
 
