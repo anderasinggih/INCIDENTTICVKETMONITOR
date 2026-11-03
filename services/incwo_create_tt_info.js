@@ -10,10 +10,9 @@ try {
 }
 
 function main() {
-    // 1. Query apakah sudah mencapai limit 6 tiket atau sudah ada orderid tsb
+    // 1. Query apakah sudah mencapai limit atau sudah ada orderid tsb
     let orderid = _message.orderid;
-    let domain = _message.domain;
-    domain = domain == "FTTH" ? domain : "FWA";
+    let inputDomain = _message.domain;
 
     var request = {};
     var response = ServiceInvoker.post(
@@ -40,7 +39,7 @@ function main() {
             code: 500,
             error: false,
             message:
-                "Ticket not found or ticket status is not running. Kindly review ticket " + orderid,
+                "Ticket not found or ticket status is not valid (active). Kindly review ticket " + orderid,
         };
     }
 
@@ -52,10 +51,28 @@ function main() {
         finalDomain = "PMA";
         cm_orderid = ttInfo.problem_ticket_id || "";
     } else {
-        // Normalisasi domain: tiket yang mengandung kata FTTH masuk ke FTTH, selain itu otomatis FWA (FWA-RAN, FWA Core, RAN, dll.)
+        // Validasi domain: Hanya tiket yang domainnya mengandung FTTH atau FWA yang diizinkan masuk
         let ticketDomain = COMMON_UTIL.isNull(ttInfo.domain) ? (COMMON_UTIL.isNull(ttInfo.raw_domain) ? "" : String(ttInfo.raw_domain).trim()) : String(ttInfo.domain).trim();
-        let determinedDomain = ticketDomain.toUpperCase().indexOf("FTTH") !== -1 ? "FTTH" : "FWA";
-        finalDomain = !COMMON_UTIL.isNull(determinedDomain) ? determinedDomain : domain;
+        if (COMMON_UTIL.isNull(ticketDomain) && !COMMON_UTIL.isNull(inputDomain)) {
+            ticketDomain = String(inputDomain).trim();
+        }
+
+        let upperDomain = ticketDomain.toUpperCase();
+        if (upperDomain.indexOf("FTTH") !== -1) {
+            finalDomain = "FTTH";
+        } else if (upperDomain.indexOf("FWA") !== -1) {
+            finalDomain = "FWA";
+        } else {
+            // Mengembalikan code 200 (sukses/aman) agar OWS frontend TIDAK memunculkan popup modal "Failed to request the interface"
+            // tetapi tiket TETAP TIDAK DI-INSERT ke Incident Ticket Monitor
+            return {
+                code: 200,
+                error: false,
+                added: false,
+                skipped: true,
+                message: "Domain ticket (" + ticketDomain + ") bukan FTTH atau FWA. Dilewati (tidak ditambahkan)."
+            };
+        }
 
         let associateorderid = ttInfo.associateorderid;
         if (!COMMON_UTIL.isNull(associateorderid)) {
@@ -93,6 +110,7 @@ function main() {
             ticket_status: isPMA ? ttInfo.order_status : ttInfo.ticket_status,
             active: true,
             tt_action: isPMA ? (ttInfo.resolution_notes || "") : ttInfo.tt_action,
+            prolong_reason: isPMA ? "" : (ttInfo.prolong_reason || ""),
             create_time: createTime,
         };
         list.push(requestInfo);
@@ -145,10 +163,11 @@ function getPMAInfo(orderid) {
 function getTTInfo(orderid) {
     let tql = `select orderid,tickettype,ticketstatus as ticket_status,title, associateorderid,createtime,createfaultfirstoccurtime as alarm_time,
             faultresolvingtime as clear_time,root_cause,sub_root_cause,link_segment,initial_rca,estimated_cp,incident_chronology as tt_action,
+            prolong_reason,
             tt.domain as raw_domain, d.name as domain
             from "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt
             left join "/datahub/cmdb/cmdb_domain" d on d.id=tt.domain 
-            where orderid = $orderid and ticketstatus ='running'
+            where orderid = $orderid and ticketstatus not in ('cancel', 'canceled', 'closed', 'completed')
             order by orderid desc
            `;
     let request = {

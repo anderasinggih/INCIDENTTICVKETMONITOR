@@ -14,6 +14,18 @@ function main() {
     let ttInfo = _message.data || {};
     let targetOrderId = COMMON_UTIL.isNull(ttInfo.orderid) ? orderid : String(ttInfo.orderid).trim();
 
+    // Hitung level tertinggi dari new_logs jika ada
+    let maxNewLogLevel = 0;
+    if (Array.isArray(ttInfo.new_logs) && ttInfo.new_logs.length > 0) {
+        ttInfo.new_logs.forEach(function (l) {
+            let lType = String(l.log_type || l.type || "").toUpperCase();
+            let lvl = Number(l.esc_level !== undefined ? l.esc_level : (l.level !== undefined ? l.level : 0));
+            if (lType.indexOf("ESCALATION") !== -1 && !isNaN(lvl) && lvl > maxNewLogLevel) {
+                maxNewLogLevel = lvl;
+            }
+        });
+    }
+
     // 1. UPDATE KE DATA MODEL LOKAL DASHBOARD (incwo_incidentticketmonitor)
     let requestLocal = {
         orderid: targetOrderId,
@@ -24,9 +36,37 @@ function main() {
         tt_action: ttInfo.tt_action
     };
 
+    // Ambil data lokal saat ini untuk validasi anti-reset
+    let currentLocalLevel = 0;
+    try {
+        let currentLocal = ServiceInvoker.post(
+            "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor_get",
+            { orderid: targetOrderId }
+        );
+        if (!COMMON_UTIL.isNull(currentLocal) && !COMMON_UTIL.isNull(currentLocal.result)) {
+            let locNum = Number(currentLocal.result.escalationlevelnumber);
+            if (!isNaN(locNum) && locNum > currentLocalLevel) {
+                currentLocalLevel = locNum;
+            }
+        }
+    } catch (eLoc) {
+        console.error(PREFIX + "check current local level error: " + eLoc.message);
+    }
+
     // Sertakan hanya jika ada nilainya agar tidak menimpa data lama di tabel lokal
     if (ttInfo.estimated_cp !== undefined) requestLocal.estimated_cp = ttInfo.estimated_cp;
     if (ttInfo.predictive_etr !== undefined) requestLocal.predictive_etr = ttInfo.predictive_etr;
+    if (ttInfo.escalationsupport !== undefined) requestLocal.escalationsupport = ttInfo.escalationsupport;
+
+    // Proteksi anti-reset untuk escalationlevelnumber di tabel lokal:
+    // Hanya perbarui jika escalationlevelnumber dikirim secara eksplisit atau ada log baru bertipe escalation
+    if (ttInfo.escalationlevelnumber !== undefined || maxNewLogLevel > 0) {
+        let inputLevel = Number(ttInfo.escalationlevelnumber || 0);
+        let finalLevel = Math.max(inputLevel, maxNewLogLevel, currentLocalLevel);
+        if (finalLevel > 0) {
+            requestLocal.escalationlevelnumber = finalLevel;
+        }
+    }
 
     updateLocalDashboard(requestLocal);
 
@@ -45,11 +85,48 @@ function main() {
 
         if (!COMMON_UTIL.isNull(troubleTicket) && !COMMON_UTIL.isNull(troubleTicket.result)) {
             let incidentChronology = troubleTicket.result.incident_chronology;
+            let currentResp = troubleTicket.result.responsibility;
+            let targetResp = ttInfo.responsibility;
+            let currentLiveLevel = Number(troubleTicket.result.escalationlevelnumber || 0);
 
-            if (incidentChronology != ttInfo.tt_action) {
-                updateTroubleTicket(orderid, ttInfo.tt_action);
+            let needUpdate = false;
+            let updatePayload = { orderid: orderid };
+
+            if (!COMMON_UTIL.isNull(ttInfo.tt_action) && incidentChronology != ttInfo.tt_action) {
+                updatePayload.incident_chronology = ttInfo.tt_action;
+                needUpdate = true;
+            }
+
+            if (!COMMON_UTIL.isNull(targetResp) && targetResp !== currentResp) {
+                updatePayload.responsibility = targetResp;
+                needUpdate = true;
+            }
+
+            // Proteksi anti-reset untuk escalationlevelnumber di tt_troubleticket:
+            // Hanya evaluasi dan update jika escalationlevelnumber dikirim atau ada log eskalasi baru
+            if (ttInfo.escalationlevelnumber !== undefined || maxNewLogLevel > 0) {
+                let inputLvl = Number(ttInfo.escalationlevelnumber || 0);
+                let targetEscLevel = Math.max(inputLvl, maxNewLogLevel, currentLiveLevel);
+                if (targetEscLevel > 0 && targetEscLevel > currentLiveLevel) {
+                    updatePayload.escalationlevelnumber = targetEscLevel;
+                    needUpdate = true;
+                }
+            }
+
+            if (ttInfo.escalationsupport !== undefined) {
+                updatePayload.escalationsupport = ttInfo.escalationsupport;
+                needUpdate = true;
+            }
+
+            if (needUpdate) {
+                updateTroubleTicket(updatePayload);
             }
         }
+    }
+
+    // 3. INSERT LOGS KE MODEL BARU incwo_escalation_log
+    if (Array.isArray(ttInfo.new_logs) && ttInfo.new_logs.length > 0) {
+        insertEscalationLogs(targetOrderId, ttInfo.new_logs);
     }
 
     return { code: 200, message: "Updated successfully" };
@@ -67,16 +144,12 @@ function updateLocalDashboard(request) {
     }
 }
 
-// Sinkronisasi HANYA field incident_chronology ke tiket utama Incident
-function updateTroubleTicket(orderId, incidentChronology) {
+// Sinkronisasi ke tiket utama Incident (incident_chronology dan responsibility jika diubah)
+function updateTroubleTicket(payload) {
     try {
-        var request = {
-            orderid: orderId,
-            incident_chronology: incidentChronology,
-        };
         ServiceInvoker.post(
             "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_update",
-            request
+            payload
         );
     } catch (e) {
         console.error(PREFIX + "updateTroubleTicket Error: " + e.message);
@@ -97,4 +170,36 @@ function updatePMAActivity(orderId, resolutionNotes) {
     } catch (e) {
         console.error(PREFIX + "updatePMAActivity Error: " + e.message);
     }
+}
+
+// Insert log riwayat eskalasi & support ke data model incwo_escalation_log
+function insertEscalationLogs(orderId, logs) {
+    let nowStr = TimeUtil.getUTCString();
+    logs.forEach(function (logItem) {
+        try {
+            let opName = logItem.operator_name || logItem.by || "";
+            // Jika ada format "NAMA (aWX1234)", ambil nama murninya saja
+            if (opName && opName.indexOf("(") !== -1) {
+                opName = opName.split("(")[0].trim();
+            }
+
+            let logPayload = {
+                orderid: String(orderId).trim(),
+                log_type: logItem.log_type || (logItem.type === "SUPPORT" ? "NEED_SUPPORT" : "ESCALATION_LEVEL"),
+                esc_level: logItem.esc_level !== undefined ? logItem.esc_level : (logItem.level !== undefined ? logItem.level : null),
+                support_status: logItem.support_status || (logItem.status || null),
+                description: logItem.description || logItem.note || "",
+                operator_id: logItem.operator_id || (typeof _runtime !== "undefined" && _runtime && _runtime.userName ? _runtime.userName : ""),
+                operator_name: opName,
+                create_time: logItem.create_time || nowStr
+            };
+
+            ServiceInvoker.post(
+                "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_escalation_log_create",
+                logPayload
+            );
+        } catch (eLog) {
+            console.error(PREFIX + "insertEscalationLogs error: " + eLog.message);
+        }
+    });
 }

@@ -59,7 +59,8 @@ function main() {
                 rca_description: pmaAction,
                 predictive_etr: "-",
                 estimated_cp: "-",
-                impactsitelist: ""
+                impactsitelist: "",
+                raw_alarm_time: pmaPlanStart
             });
         } else {
             let dom = COMMON_UTIL.isNull(info.tt_domain) ? "" : String(info.tt_domain).toUpperCase();
@@ -76,6 +77,7 @@ function main() {
             let liveRootCause = COMMON_UTIL.isNull(info.tt_live_root_cause) ? "" : info.tt_live_root_cause;
             let liveSubRootCause = COMMON_UTIL.isNull(info.tt_live_sub_root_cause) ? "" : info.tt_live_sub_root_cause;
             let liveImpactSiteList = COMMON_UTIL.isNull(info.tt_live_impactsitelist) ? "" : info.tt_live_impactsitelist;
+            let liveProlongReason = COMMON_UTIL.isNull(info.tt_live_prolong_reason) ? "" : info.tt_live_prolong_reason;
             let liveAction = COMMON_UTIL.isNull(info.tt_live_action) ? "" : info.tt_live_action;
             let liveEstimatedCp = COMMON_UTIL.isNull(info.tt_live_estimated_cp) ? "" : info.tt_live_estimated_cp;
             let livePic = !COMMON_UTIL.isNull(info.vendor_name)
@@ -101,6 +103,7 @@ function main() {
                 root_cause: liveRootCause,
                 sub_root_cause: liveSubRootCause,
                 impactsitelist: liveImpactSiteList,
+                prolong_reason: liveProlongReason,
                 rca_description: info.rca_description,
                 predictive_etr: info.predictive_etr,
                 estimated_cp: info.tt_domain != "FTTH" ? "-" : (liveEstimatedCp || "-"),
@@ -110,9 +113,21 @@ function main() {
                 aging_time: getAgingTime(liveAlarmTime, timeUTC7),
                 tt_action: liveAction,
                 tt_domain: info.tt_domain,
+                escalationlevelnumber: !COMMON_UTIL.isNull(info.tt_live_escalationlevelnumber) ? Number(info.tt_live_escalationlevelnumber) : 0,
+                escalationsupport: !COMMON_UTIL.isNull(info.tt_live_escalationsupport) ? info.tt_live_escalationsupport : "NO_NEED",
+                raw_alarm_time: liveAlarmTime,
             });
         }
     }
+
+    // Urutkan berdasarkan aging paling lama di atas (alarm time paling awal)
+    list.sort(function (a, b) {
+        let tA = a.raw_alarm_time ? Number(TimeUtil.parseTimestamp(a.raw_alarm_time, "yyyy-MM-dd HH:mm:ss")) : 0;
+        let tB = b.raw_alarm_time ? Number(TimeUtil.parseTimestamp(b.raw_alarm_time, "yyyy-MM-dd HH:mm:ss")) : 0;
+        if (tA === 0) return 1;
+        if (tB === 0) return -1;
+        return tA - tB;
+    });
 
     return { data: list, fwaNum: fwaNum, ftthNum: ftthNum, pmaNum: pmaNum };
 }
@@ -141,12 +156,15 @@ function getTTList() {
             tt.ticketstatus,
             tt.title as tt_live_title,
             tt.createfaultfirstoccurtime as tt_live_alarm_time,
-            tt.closetime as tt_live_clear_time,
+            tt.faultrecoverytime as tt_live_clear_time,
             tt.root_cause as tt_live_root_cause,
             tt.sub_root_cause as tt_live_sub_root_cause,
             tt.impactsitelist as tt_live_impactsitelist,
+            tt.prolong_reason as tt_live_prolong_reason,
             tt.incident_chronology as tt_live_action,
             tt.estimated_cp as tt_live_estimated_cp,
+            tt.escalationlevelnumber as tt_live_escalationlevelnumber,
+            tt.escalationsupport as tt_live_escalationsupport,
             v.name as vendor_name,
             v.label as vendor_label,
             tt.responsibility as tt_live_responsibility,
@@ -165,6 +183,11 @@ function getTTList() {
             left join "/DataSource/msup_customization_options/customization_options_vendor" as v on tt.responsibility = v.id
             left join "/ProblemManagementActivity/ProblemManagementActivity/pma_problemmanagementactivity" as pma on inc.orderid = pma.order_id
             where inc.active = true 
+              and (
+                (inc.orderid not like 'PMA-%' and (tt.faultrecoverytime is null or tt.faultrecoverytime = '') and (tt.ticketstatus is null or tt.ticketstatus not in ('closed', 'completed', 'cancel', 'canceled')))
+                or
+                (inc.orderid like 'PMA-%')
+              )
             order by inc.tt_domain, inc.create_time DESC
            `;
     let request = {

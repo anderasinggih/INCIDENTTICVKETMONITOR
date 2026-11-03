@@ -72,10 +72,36 @@ function main() {
                 ttInfo.root_cause = COMMON_UTIL.isNull(liveResult.root_cause) ? "" : liveResult.root_cause;
                 ttInfo.sub_root_cause = COMMON_UTIL.isNull(liveResult.sub_root_cause) ? "" : liveResult.sub_root_cause;
                 ttInfo.impactsitelist = COMMON_UTIL.isNull(liveResult.impactsitelist) ? "" : liveResult.impactsitelist;
+                ttInfo.prolong_reason = COMMON_UTIL.isNull(liveResult.prolong_reason) ? "" : liveResult.prolong_reason;
+                let rawEscHistory = !COMMON_UTIL.isNull(liveResult.escalationhistory)
+                    ? liveResult.escalationhistory
+                    : (!COMMON_UTIL.isNull(liveResult.escalationlevel) ? liveResult.escalationlevel : "");
+                ttInfo.escalationhistory = rawEscHistory;
+                ttInfo.escalationlevel = rawEscHistory;
+                let liveLvl = COMMON_UTIL.isNull(liveResult.escalationlevelnumber) ? null : liveResult.escalationlevelnumber;
+                // Jika tt_troubleticket live bernilai null/0, gunakan data yang sudah tersimpan di tabel lokal
+                if (!COMMON_UTIL.isNull(liveLvl) && Number(liveLvl) > 0) {
+                    ttInfo.escalationlevelnumber = Number(liveLvl);
+                } else if (!COMMON_UTIL.isNull(ttInfo.escalationlevelnumber) && Number(ttInfo.escalationlevelnumber) > 0) {
+                    ttInfo.escalationlevelnumber = Number(ttInfo.escalationlevelnumber);
+                } else {
+                    ttInfo.escalationlevelnumber = null;
+                }
+                ttInfo.escalationsupport = COMMON_UTIL.isNull(liveResult.escalationsupport) ? "NO_NEED" : liveResult.escalationsupport;
                 let respId = COMMON_UTIL.isNull(liveResult.responsibility) ? "" : liveResult.responsibility;
+                ttInfo.responsibility = respId;
                 ttInfo.pic = getVendorName(respId);
                 if (!COMMON_UTIL.isNull(liveResult.estimated_cp)) {
                     ttInfo.estimated_cp = liveResult.estimated_cp;
+                }
+
+                // Sertakan alarm_time dan aging_time yang konsisten dengan get_list
+                let liveAlarm = liveResult.createfaultfirstoccurtime || ttInfo.alarm_time;
+                if (!COMMON_UTIL.isNull(liveAlarm)) {
+                    let zoneId = _runtime.timeZone;
+                    ttInfo.alarm_time = TimeUtil.utc2Local(liveAlarm, zoneId);
+                    let nowMs = new Date().getTime();
+                    ttInfo.aging_time = getAgingTime(liveAlarm, nowMs);
                 }
             }
         } catch (e) {
@@ -87,7 +113,72 @@ function main() {
         ttInfo["estimated_cp"] = "-";
     }
 
-    return { data: ttInfo };
+    let vendorList = getVendorList();
+    let currentUser = getUserDisplayName();
+    let escalationLogs = getEscalationLogs(orderid);
+
+    // Proteksi anti-reset & anti-null: sinkronkan dengan level tertinggi di riwayat incwo_escalation_log
+    let maxLogLevel = 0;
+    if (Array.isArray(escalationLogs) && escalationLogs.length > 0) {
+        escalationLogs.forEach(function (row) {
+            let lType = String(row.log_type || "").toUpperCase();
+            let lNum = Number(row.esc_level || 0);
+            if (lType.indexOf("ESCALATION") !== -1 && !isNaN(lNum) && lNum > maxLogLevel) {
+                maxLogLevel = lNum;
+            }
+        });
+    }
+
+    let resolvedLvl = Number(ttInfo.escalationlevelnumber || 0);
+    ttInfo.escalationlevelnumber = Math.max(resolvedLvl, maxLogLevel);
+
+    return {
+        data: ttInfo,
+        vendorList: vendorList,
+        current_user: currentUser,
+        escalation_logs: escalationLogs
+    };
+}
+
+function getUserDisplayName() {
+    let accountId = (typeof _runtime !== "undefined" && _runtime && _runtime.userName) ? String(_runtime.userName).trim() : "";
+    if (!accountId) {
+        return "";
+    }
+    try {
+        let uRes = ServiceInvoker.post("/adc-service/rest/v1/services/System/usermgt/um_user_get", {
+            account_id: accountId
+        });
+        if (!COMMON_UTIL.isNull(uRes) && !COMMON_UTIL.isNull(uRes.result) && !COMMON_UTIL.isNull(uRes.result.fullname)) {
+            return uRes.result.fullname;
+        }
+    } catch (eSrv) {
+        console.error(PREFIX + "um_user_get failed: " + eSrv);
+    }
+    return accountId;
+}
+
+function getVendorList() {
+    let tql = `select id, name, label from "/DataSource/msup_customization_options/customization_options_vendor" order by name asc`;
+    let request = {
+        start: 0,
+        limit: 500,
+        tql: tql,
+        parameters: {},
+        contains_total: false,
+    };
+    try {
+        var response = ServiceInvoker.post(
+            "/adc-model/rest/v2/model-instances/query-by-tql",
+            request
+        );
+        if (!COMMON_UTIL.isNull(response.results)) {
+            return response.results;
+        }
+    } catch (e) {
+        console.error(PREFIX + " getVendorList failed: " + e);
+    }
+    return [];
 }
 
 function getVendorName(vendorId) {
@@ -115,4 +206,47 @@ function getVendorName(vendorId) {
         console.error(PREFIX + " getVendorName failed: " + e);
     }
     return vendorId;
+}
+
+function getEscalationLogs(orderId) {
+    if (COMMON_UTIL.isNull(orderId)) return [];
+    let tql = `select id, orderid, log_type, esc_level, support_status, description, operator_id, operator_name, create_time ` +
+        `from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_escalation_log" ` +
+        `where orderid = $orderid ` +
+        `order by create_time asc`;
+    let request = {
+        start: 0,
+        limit: 100,
+        tql: tql,
+        parameters: { orderid: String(orderId).trim() },
+        contains_total: false,
+    };
+    try {
+        var response = ServiceInvoker.post(
+            "/adc-model/rest/v2/model-instances/query-by-tql",
+            request
+        );
+        if (!COMMON_UTIL.isNull(response.results)) {
+            return response.results;
+        }
+    } catch (e) {
+        console.error(PREFIX + " getEscalationLogs failed: " + e);
+    }
+    return [];
+}
+
+function getAgingTime(alarmTime, timeUTC7) {
+    let aging = "";
+    if (COMMON_UTIL.isNull(alarmTime)) {
+        return aging;
+    }
+    let alarmTimestamp = TimeUtil.parseTimestamp(
+        alarmTime,
+        "yyyy-MM-dd HH:mm:ss"
+    );
+    const diffMs = Math.abs(Number(timeUTC7) - Number(alarmTimestamp));
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return hours + " hours " + minutes + " minutes";
 }
