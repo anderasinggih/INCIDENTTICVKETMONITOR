@@ -8,6 +8,13 @@
 (function () {
     "use strict";
 
+    // =========================================================================
+    // FEATURE FLAGS & ROLLBACK CONFIGURATION
+    // =========================================================================
+    // true : Clicking "View & Edit Details" directly redirects/opens the ticket in Process TT (Read-only monitor view)
+    // false: Restores full local modal editing with lock verification & conflict guard
+    var CONFIG_DIRECT_REDIRECT_TO_PROCESS_TT = true;
+
     // Service Endpoints (Module: IncidentTicketMonitor, Prefix: incwo)
     var SERVICE_LIST =
         "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_query_tt_info_get_list";
@@ -1566,8 +1573,8 @@
             html += '  </div>';
             html += '  <div class="custom-wo-card-footer">';
             html += '    <button type="button" class="custom-btn-card-details" onclick="window.openDetailModal(\'' + escapeHtml(orderId) + '\')">';
-            html += '      <span>View & Edit Details</span>';
-            html += '      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+            html += '      <span>Open in Process TT</span>';
+            html += '      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
             html += '    </button>';
             html += '  </div>';
             html += '</div>';
@@ -2040,7 +2047,90 @@
             });
     }
 
+    // =========================================================================
+    // PROCESS TT DIRECT REDIRECT HELPER (READ-ONLY MONITOR MODE)
+    // =========================================================================
+    function openProcessTTTicket(orderId) {
+        if (!orderId) return;
+        orderId = String(orderId).trim();
+
+        var isPMA = String(orderId).toUpperCase().indexOf("PMA") !== -1;
+        var appName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
+        var moduleName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
+        var processName = isPMA ? "ID_75_1518168058873" : "ID_799_1510131121023";
+
+        var SERVICE_ORDER_QUERY = "/adc-service/web/rest/v1/services/OrderQuery/OrderQuery/oq_order_page_query";
+        var queryPayload = {
+            is_archived: false,
+            app_name: appName,
+            module_name: moduleName,
+            process_name: processName,
+            order_id: orderId
+        };
+
+        if (typeof MessageProcessor !== "undefined" && MessageProcessor.process) {
+            MessageProcessor.process({
+                url: SERVICE_ORDER_QUERY,
+                data: queryPayload,
+                success: function (result) {
+                    if (result && result.valid && result.parameters) {
+                        result.parameters.process_name = processName;
+                        result.parameters.order_status = result.parameters.processstatus || "running";
+                        var params = [];
+                        for (var key in result.parameters) {
+                            if (result.parameters.hasOwnProperty(key)) {
+                                if (result.isLegacy === "legacy" && key === "taskid") continue;
+                                params.push(encodeURIComponent(key) + "=" + encodeURIComponent(result.parameters[key]));
+                            }
+                        }
+                        var queryString = params.join("&");
+                        var targetUrl = "";
+                        if (result.isLegacy === "legacy") {
+                            targetUrl = "/adc-web/bpm/order-process/order-submit-panel.html?" + queryString;
+                        } else if (result.url) {
+                            targetUrl = "/adc-web/ui/standalone/index-plus.html#/spl2/" + result.url + "?" + queryString;
+                        } else {
+                            targetUrl = "/adc-web/bpm/order-process/order-submit-panel.html?" + queryString;
+                        }
+                        window.open(targetUrl, "_blank");
+                        return;
+                    }
+                    openProcessTTDirectFallback(orderId, isPMA);
+                },
+                error: function () {
+                    openProcessTTDirectFallback(orderId, isPMA);
+                }
+            });
+        } else {
+            openProcessTTDirectFallback(orderId, isPMA);
+        }
+    }
+
+    function openProcessTTDirectFallback(orderId, isPMA) {
+        var processDefKey = isPMA ? "ID_75_1518168058873" : "ID_799_1510131121023";
+        var appName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
+        var moduleName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
+        var fallbackUrl = "/adc-web/bpm/order-process/order-submit-panel.html?orderid=" + encodeURIComponent(orderId) +
+            "&processdefkey=" + encodeURIComponent(processDefKey) +
+            "&ticketid=" + encodeURIComponent(orderId) +
+            "&currentphase=Process%20TT" +
+            "&processstatus=running" +
+            "&app_name=" + encodeURIComponent(appName) +
+            "&module_name=" + encodeURIComponent(moduleName) +
+            "&is_archived=false" +
+            "&process_name=" + encodeURIComponent(processDefKey) +
+            "&order_status=running";
+        window.open(fallbackUrl, "_blank");
+    }
+
     window.openDetailModal = function (orderId) {
+        // If direct redirect is enabled, immediately open ticket in Process TT
+        if (CONFIG_DIRECT_REDIRECT_TO_PROCESS_TT) {
+            openProcessTTTicket(orderId);
+            return;
+        }
+
+        // --- LEGACY MODAL EDITING & CONFLICT GUARD (ACTIVE IF CONFIG SET TO FALSE) ---
         var activeLock = readActiveTicketLock(orderId);
         // Instant same-laptop lock check (only conflict if locked by Process TT)
         if (activeLock && activeLock.tabId !== MONITOR_TAB_ID && activeLock.holder === "PROCESS_TT") {
