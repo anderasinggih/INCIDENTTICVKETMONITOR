@@ -9,7 +9,7 @@
  * 3. Enforces sequential escalation rules (1 -> 2 -> 3 -> 4 -> 5), no rollback, and mandatory reason input.
  * 4. Syncs updates to:
  *    - `incwo_update_tt_info` (local monitor + `incwo_escalation_log` + `tt_troubleticket`)
- *    - `tt_troubleticket_update` (direct safeguard for tickets not yet in monitor watchlist)
+ *    - `c_TroubleTicket/TroubleTicket/tt_update` (direct page-level safeguard for tickets)
  *    - Live Process TT form fields: `incident_chronology`, `showescalationlevel`, `showescalationsupport`, `escalation_recordtext`
  *    - BroadcastChannel (`ows_inc_ticket_sync_v1`) to notify open Ticket Monitor tabs.
  */
@@ -20,7 +20,7 @@
     var SERVICE_DETAIL = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_query_tt_detail";
     var SERVICE_UPDATE = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_update_tt_info";
     var SERVICE_TT_GET = "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_get";
-    var SERVICE_TT_UPDATE = "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_update";
+    var SERVICE_TT_UPDATE = "/adc-service/rest/v1/services/c_TroubleTicket/TroubleTicket/tt_update";
     var SERVICE_LOG_TEXT = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_get_escalation_log_text";
     var SERVICE_INCLINK_GET = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/LinkDownTicketMonitor/inclink_linkdownticketmonitor_get";
     var SERVICE_INCLINK_UPDATE = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/LinkDownTicketMonitor/inclink_linkdownticketmonitor_update";
@@ -913,16 +913,19 @@
                         confirmBtn.textContent = "Confirm";
                     }
 
-                    // Direct safeguard update to tt_troubleticket
+                    // Direct safeguard update to tt_troubleticket via tt_update
                     MessageProcessor.process({
                         serviceId: SERVICE_TT_UPDATE,
                         data: {
                             orderid: orderId,
+                            order_id: orderId,
                             escalationlevelnumber: targetLevel,
                             incident_chronology: updatedChronology
                         },
                         success: function () { },
-                        error: function () { }
+                        error: function (err) {
+                            console.warn("[ProcessTT Escalation] tt_update error:", err);
+                        }
                     });
 
                     // Sync to Link Down Ticket Monitor if present there
@@ -1082,16 +1085,19 @@
                         confirmBtn.textContent = "Confirm";
                     }
 
-                    // Direct safeguard update to tt_troubleticket
+                    // Direct safeguard update to tt_troubleticket via tt_update
                     MessageProcessor.process({
                         serviceId: SERVICE_TT_UPDATE,
                         data: {
                             orderid: orderId,
+                            order_id: orderId,
                             escalationsupport: targetSupp,
                             incident_chronology: updatedChronology
                         },
                         success: function () { },
-                        error: function () { }
+                        error: function (err) {
+                            console.warn("[ProcessTT Escalation] tt_update error:", err);
+                        }
                     });
 
                     // Sync to Link Down Ticket Monitor if present there
