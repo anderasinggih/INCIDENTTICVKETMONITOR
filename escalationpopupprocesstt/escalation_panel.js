@@ -19,7 +19,6 @@
 
     var SERVICE_DETAIL = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_query_tt_detail";
     var SERVICE_UPDATE = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_update_tt_info";
-    var SERVICE_TT_GET = "/adc-service/rest/v1/services/TroubleTicket/TroubleTicket/tt_troubleticket_get";
     var SERVICE_TT_UPDATE = "/adc-service/rest/v1/services/c_TroubleTicket/TroubleTicket/tt_update";
     var SERVICE_LOG_TEXT = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_get_escalation_log_text";
     var SERVICE_INCLINK_GET = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/LinkDownTicketMonitor/inclink_linkdownticketmonitor_get";
@@ -238,33 +237,10 @@
 
     function prependToProcessTTChronology(newLogLine, callback) {
         var formChronology = getLiveProcessTTChronology();
-        if (formChronology !== null) {
-            var trimmed = formChronology.trim();
-            var updated = trimmed ? (newLogLine + "\n" + trimmed) : newLogLine;
-            setOwsComponentValue("incident_chronology", updated);
-            if (callback) callback(updated);
-            return;
-        }
-
-        // Fallback: fetch live incident_chronology from tt_troubleticket_get
-        if (!state.orderId || typeof MessageProcessor === "undefined" || !MessageProcessor.process) {
-            if (callback) callback(newLogLine);
-            return;
-        }
-
-        MessageProcessor.process({
-            serviceId: SERVICE_TT_GET,
-            data: { orderid: state.orderId },
-            success: function (res) {
-                var existing = (res && res.result && res.result.incident_chronology) ? String(res.result.incident_chronology).trim() : "";
-                var updated = existing ? (newLogLine + "\n" + existing) : newLogLine;
-                setOwsComponentValue("incident_chronology", updated);
-                if (callback) callback(updated);
-            },
-            error: function () {
-                if (callback) callback(newLogLine);
-            }
-        });
+        var existing = (formChronology !== null && typeof formChronology === "string") ? formChronology.trim() : "";
+        var updated = existing ? (newLogLine + "\n" + existing) : newLogLine;
+        setOwsComponentValue("incident_chronology", updated);
+        if (callback) callback(updated);
     }
 
     function refreshProcessTTFormEscalationFields() {
@@ -715,35 +691,7 @@
             error: function () { }
         });
 
-        // 2. Also query live tt_troubleticket_get in case ticket is not in incwo_incidentticketmonitor yet
-        MessageProcessor.process({
-            serviceId: SERVICE_TT_GET,
-            data: { orderid: targetId },
-            success: function (res) {
-                var live = (res && res.result) ? res.result : null;
-                if (!live) return;
-
-                var liveLvl = Number(live.escalationlevelnumber || 0);
-                if (!isNaN(liveLvl) && liveLvl > state.escalationLevel) {
-                    state.escalationLevel = liveLvl;
-                }
-
-                var liveSupp = String(live.escalationsupport || "").trim().toUpperCase();
-                if (liveSupp === "NEED" || liveSupp === "NEED SUPPORT") {
-                    state.escalationSupport = "NEED";
-                }
-
-                if (!state.alarmTimeStr && live.createfaultfirstoccurtime) {
-                    state.alarmTimeStr = String(live.createfaultfirstoccurtime);
-                }
-
-                updateEscalationUI();
-                refreshProcessTTFormEscalationFields();
-            },
-            error: function () { }
-        });
-
-        // 3. Check if ticket also exists in inclink_linkdownticketmonitor
+        // 2. Check if ticket also exists in inclink_linkdownticketmonitor
         MessageProcessor.process({
             serviceId: SERVICE_INCLINK_GET,
             data: { orderid: targetId },

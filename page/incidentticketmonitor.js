@@ -2095,32 +2095,15 @@
                         window.open(targetUrl, "_blank");
                         return;
                     }
-                    openProcessTTDirectFallback(orderId, isPMA);
+                    showToast("Process instance not active or not found in BPM for " + orderId, false);
                 },
-                error: function () {
-                    openProcessTTDirectFallback(orderId, isPMA);
+                error: function (err) {
+                    showToast("Failed to query ticket process URL: " + ((err && err.message) || "Network error"), false);
                 }
             });
         } else {
-            openProcessTTDirectFallback(orderId, isPMA);
+            showToast("MessageProcessor is not available to open ticket", false);
         }
-    }
-
-    function openProcessTTDirectFallback(orderId, isPMA) {
-        var processDefKey = isPMA ? "ID_75_1518168058873" : "ID_799_1510131121023";
-        var appName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
-        var moduleName = isPMA ? "ProblemManagementActivity" : "TroubleTicket";
-        var fallbackUrl = "/adc-web/bpm/order-process/order-submit-panel.html?orderid=" + encodeURIComponent(orderId) +
-            "&processdefkey=" + encodeURIComponent(processDefKey) +
-            "&ticketid=" + encodeURIComponent(orderId) +
-            "&currentphase=Process%20TT" +
-            "&processstatus=running" +
-            "&app_name=" + encodeURIComponent(appName) +
-            "&module_name=" + encodeURIComponent(moduleName) +
-            "&is_archived=false" +
-            "&process_name=" + encodeURIComponent(processDefKey) +
-            "&order_status=running";
-        window.open(fallbackUrl, "_blank");
     }
 
     window.openDetailModal = function (orderId) {
