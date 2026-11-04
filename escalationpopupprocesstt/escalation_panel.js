@@ -826,6 +826,9 @@
         var reasonInput = document.getElementById("pttEscLevelReasonInput");
         if (reasonInput) reasonInput.value = "";
 
+        var mainModal = document.getElementById("pttEscMainModal");
+        if (mainModal) mainModal.style.display = "none";
+
         var modal = document.getElementById("pttEscConfirmLevelModal");
         if (modal) modal.style.display = "flex";
     };
@@ -834,6 +837,9 @@
         var modal = document.getElementById("pttEscConfirmLevelModal");
         if (modal) modal.style.display = "none";
         state.pendingEscalationLevel = null;
+
+        var mainModal = document.getElementById("pttEscMainModal");
+        if (mainModal) mainModal.style.display = "flex";
     };
 
     window.closePttConfirmLevelOnBackdrop = function (e) {
@@ -996,6 +1002,9 @@
             }
         }
 
+        var mainModal = document.getElementById("pttEscMainModal");
+        if (mainModal) mainModal.style.display = "none";
+
         var modal = document.getElementById("pttEscConfirmSupportModal");
         if (modal) modal.style.display = "flex";
     };
@@ -1004,6 +1013,9 @@
         var modal = document.getElementById("pttEscConfirmSupportModal");
         if (modal) modal.style.display = "none";
         state.pendingSupportStatus = null;
+
+        var mainModal = document.getElementById("pttEscMainModal");
+        if (mainModal) mainModal.style.display = "flex";
     };
 
     window.closePttConfirmSupportOnBackdrop = function (e) {
