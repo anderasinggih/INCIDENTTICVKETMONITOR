@@ -21,6 +21,8 @@
     var SERVICE_UPDATE = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_update_tt_info";
     var SERVICE_TT_UPDATE = "/adc-service/rest/v1/services/c_TroubleTicket/TroubleTicket/tt_update";
     var SERVICE_LOG_TEXT = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_get_escalation_log_text";
+    var SERVICE_ESC_LOG_GET_LIST = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_escalation_log_get_list";
+    var SERVICE_ESC_LOG_GET = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_escalation_log_get";
     var SERVICE_INCLINK_GET = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/LinkDownTicketMonitor/inclink_linkdownticketmonitor_get";
     var SERVICE_INCLINK_UPDATE = "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/LinkDownTicketMonitor/inclink_linkdownticketmonitor_update";
 
@@ -628,6 +630,105 @@
         }
     }
 
+    function fetchEscalationHistoryLogs(orderId, callback) {
+        var targetId = String(orderId || state.orderId || getTicketOrderId() || "").trim();
+        if (!targetId || typeof MessageProcessor === "undefined" || !MessageProcessor.process) {
+            if (callback) callback(state.escalationHistory || []);
+            return;
+        }
+
+        var reqPayload = {
+            orderid: targetId,
+            condition: { orderid: targetId },
+            start: 0,
+            limit: 100
+        };
+
+        MessageProcessor.process({
+            serviceId: SERVICE_ESC_LOG_GET_LIST,
+            data: reqPayload,
+            success: function (res) {
+                var rawList = [];
+                if (res) {
+                    if (Array.isArray(res)) {
+                        rawList = res;
+                    } else if (Array.isArray(res.results)) {
+                        rawList = res.results;
+                    } else if (Array.isArray(res.result)) {
+                        rawList = res.result;
+                    } else if (Array.isArray(res.data)) {
+                        rawList = res.data;
+                    } else if (Array.isArray(res.list)) {
+                        rawList = res.list;
+                    }
+                }
+
+                if (rawList.length > 0) {
+                    var maxLogLevel = 0;
+                    var latestSuppStatus = null;
+                    var mappedLogs = rawList.map(function (row) {
+                        var lType = String(row.log_type || row.type || "").toUpperCase();
+                        var lNum = Number(row.esc_level !== undefined && row.esc_level !== null ? row.esc_level : (row.level !== undefined ? row.level : 0));
+                        if (lType.indexOf("ESCALATION") !== -1 && !isNaN(lNum) && lNum > maxLogLevel) {
+                            maxLogLevel = lNum;
+                        }
+                        if (lType === "NEED_SUPPORT" || lType === "SUPPORT" || row.support_status) {
+                            var suppRaw = String(row.support_status || row.status || "").toUpperCase();
+                            if (suppRaw === "NEED" || suppRaw === "NEED SUPPORT") {
+                                latestSuppStatus = "NEED";
+                            } else if (suppRaw === "NO_NEED" || suppRaw === "NO NEED" || suppRaw === "NO NEED SUPPORT") {
+                                latestSuppStatus = "NO_NEED";
+                            }
+                        }
+                        var opName = row.operator_name || row.by || row.operator_id || "Operator";
+                        if (typeof opName === "string" && opName.indexOf("(") !== -1) {
+                            opName = opName.split("(")[0].trim();
+                        }
+                        return {
+                            id: row.id,
+                            orderid: row.orderid,
+                            log_type: row.log_type || row.type || (lNum > 0 ? "ESCALATION_LEVEL" : "NEED_SUPPORT"),
+                            level: lNum,
+                            esc_level: lNum,
+                            support_status: row.support_status || row.status || "",
+                            status: row.support_status || row.status || "",
+                            time: row.create_time || row.time || "",
+                            create_time: row.create_time || row.time || "",
+                            operator_id: row.operator_id || "",
+                            operator_name: opName,
+                            by: opName,
+                            description: row.description || row.note || "",
+                            note: row.description || row.note || ""
+                        };
+                    });
+
+                    // Sort chronologically (earliest to latest)
+                    mappedLogs.sort(function (a, b) {
+                        var tA = a.create_time ? new Date(String(a.create_time).replace(/-/g, "/")).getTime() : 0;
+                        var tB = b.create_time ? new Date(String(b.create_time).replace(/-/g, "/")).getTime() : 0;
+                        return tA - tB;
+                    });
+
+                    state.escalationHistory = mappedLogs;
+                    if (maxLogLevel > 0 && maxLogLevel > state.escalationLevel) {
+                        state.escalationLevel = maxLogLevel;
+                    }
+                    if (latestSuppStatus && latestSuppStatus !== state.escalationSupport) {
+                        state.escalationSupport = latestSuppStatus;
+                    }
+
+                    updateEscalationUI();
+                    refreshProcessTTFormEscalationFields();
+                }
+
+                if (callback) callback(state.escalationHistory);
+            },
+            error: function () {
+                if (callback) callback(state.escalationHistory || []);
+            }
+        });
+    }
+
     function loadTicketEscalationData(orderId) {
         var targetId = String(orderId || getTicketOrderId() || "").trim();
         if (!targetId) return;
@@ -636,7 +737,10 @@
 
         if (typeof MessageProcessor === "undefined" || !MessageProcessor.process) return;
 
-        // 1. Query from incwo_query_tt_detail (returns detail + current_user + escalation_logs)
+        // 1. Direct query to incwo_escalation_log_get_list for dedicated log history
+        fetchEscalationHistoryLogs(targetId);
+
+        // 2. Query from incwo_query_tt_detail (returns detail + current_user + escalation_logs)
         MessageProcessor.process({
             serviceId: SERVICE_DETAIL,
             data: { orderid: targetId },
@@ -647,8 +751,8 @@
                 var detail = (res && res.data) ? res.data : {};
                 var logs = (res && Array.isArray(res.escalation_logs)) ? res.escalation_logs : [];
 
-                var maxLogLevel = 0;
-                if (logs.length > 0) {
+                if (logs.length > 0 && (!state.escalationHistory || state.escalationHistory.length === 0)) {
+                    var maxLogLevel = 0;
                     state.escalationHistory = logs.map(function (row) {
                         var lType = String(row.log_type || "").toUpperCase();
                         var lNum = Number(row.esc_level || 0);
@@ -669,11 +773,16 @@
                             note: row.description || ""
                         };
                     });
+                    if (maxLogLevel > state.escalationLevel) {
+                        state.escalationLevel = maxLogLevel;
+                    }
                 }
 
                 var dLevel = Number(extractOWSField(detail.escalationlevelnumber) || 0);
                 if (isNaN(dLevel)) dLevel = 0;
-                state.escalationLevel = Math.max(dLevel, maxLogLevel);
+                if (dLevel > state.escalationLevel) {
+                    state.escalationLevel = dLevel;
+                }
 
                 var suppRaw = String(extractOWSField(detail.escalationsupport) || "").toUpperCase();
                 if (suppRaw === "NEED" || suppRaw === "NEED SUPPORT") {
@@ -691,7 +800,7 @@
             error: function () { }
         });
 
-        // 2. Check if ticket also exists in inclink_linkdownticketmonitor
+        // 3. Check if ticket also exists in inclink_linkdownticketmonitor
         MessageProcessor.process({
             serviceId: SERVICE_INCLINK_GET,
             data: { orderid: targetId },
@@ -721,6 +830,8 @@
         if (latestId && latestId !== state.orderId) {
             loadTicketEscalationData(latestId);
         } else {
+            // Always fetch the freshest logs when modal opens
+            fetchEscalationHistoryLogs(state.orderId || latestId);
             updateEscalationUI();
         }
 
@@ -902,6 +1013,7 @@
                     updateEscalationUI();
                     refreshProcessTTFormEscalationFields();
                     broadcastSavedSignal();
+                    fetchEscalationHistoryLogs(orderId);
                     showToast("Escalated to Level " + targetLevel + " & injected into chronology!", true);
                 },
                 error: function (err) {
@@ -1118,6 +1230,7 @@
                     updateEscalationUI();
                     refreshProcessTTFormEscalationFields();
                     broadcastSavedSignal();
+                    fetchEscalationHistoryLogs(orderId);
                     showToast("Support status updated to " + (targetSupp === "NEED" ? "Need Support" : "No Need Support") + "!", true);
                 },
                 error: function (err) {

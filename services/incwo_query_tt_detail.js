@@ -14,13 +14,21 @@ function main() {
     var request = { orderid: orderid };
 
     // 1. Ambil data detail dari tabel lokal incwo_incidentticketmonitor
-    var ttInfo = ServiceInvoker.post(
-        "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor_get",
-        request
-    ).result;
+    var ttInfo = null;
+    try {
+        var localRes = ServiceInvoker.post(
+            "/adc-service/rest/v1/services/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor_get",
+            request
+        );
+        if (!COMMON_UTIL.isNull(localRes) && !COMMON_UTIL.isNull(localRes.result)) {
+            ttInfo = localRes.result;
+        }
+    } catch (eLoc) {
+        console.error(PREFIX + "get local incwo error: " + eLoc.message);
+    }
 
     if (COMMON_UTIL.isNull(ttInfo)) {
-        return { data: {} };
+        ttInfo = { orderid: orderid };
     }
 
     // 2. Ambil data live dari tiket utama (PMA vs INC) jika ada perubahan dari OWS
