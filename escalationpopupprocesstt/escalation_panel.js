@@ -137,45 +137,52 @@
     }
 
     function getTicketOrderId() {
-        // 1. Check OWS form component S('orderid')
+        // 1. Check URL parameters in window / parent / top (most authoritative in BPM submit panel)
+        var urlCandidates = [window.location.search, window.location.href];
+        try { if (window.parent) urlCandidates.push(window.parent.location.search, window.parent.location.href); } catch (eP) { }
+        try { if (window.top) urlCandidates.push(window.top.location.search, window.top.location.href); } catch (eT) { }
+
+        for (var j = 0; j < urlCandidates.length; j++) {
+            var urlStr = urlCandidates[j] || "";
+            var m = urlStr.match(/[?&]order_?id=([^&#]+)/i);
+            if (m && m[1]) {
+                var dec = decodeURIComponent(m[1]).trim();
+                if (dec) return dec;
+            }
+            var mInc = urlStr.match(/(INC|PMA)-\d{8}-\d+/i);
+            if (mInc) return mInc[0].trim();
+        }
+
+        // 2. Check OWS form component S('orderid') / S('order_id')
         try {
             if (typeof S === "function") {
-                var compCandidates = ["orderid", "order_id", "ticketid", "ticket_id"];
+                var compCandidates = ["orderid", "order_id"];
                 for (var i = 0; i < compCandidates.length; i++) {
                     var comp = S(compCandidates[i]);
                     if (comp && comp.getValue) {
                         var val = comp.getValue();
                         if (val && typeof val === "string" && val.trim().length > 0) {
-                            return val.trim();
+                            var strVal = val.trim();
+                            // Guard: ignore raw internal 32-hex workflow UUIDs
+                            if (!/^[0-9a-f]{16,36}-[0-9a-f]+/i.test(strVal)) {
+                                return strVal;
+                            }
                         } else if (Array.isArray(val) && val.length > 0) {
-                            var itemVal = (val[0].orderid || val[0].id || val[0].value || val[0] || "").toString().trim();
-                            if (itemVal) return itemVal;
+                            var itemVal = (val[0].orderid || val[0].order_id || val[0].id || val[0].value || val[0] || "").toString().trim();
+                            if (itemVal && !/^[0-9a-f]{16,36}-[0-9a-f]+/i.test(itemVal)) return itemVal;
                         } else if (val && typeof val === "object") {
-                            var objVal = (val.orderid || val.id || val.value || "").toString().trim();
-                            if (objVal) return objVal;
+                            var objVal = (val.orderid || val.order_id || val.id || val.value || "").toString().trim();
+                            if (objVal && !/^[0-9a-f]{16,36}-[0-9a-f]+/i.test(objVal)) return objVal;
                         }
                     }
                 }
             }
         } catch (eComp) { }
 
-        // 2. Check URL parameters in window / parent / top
-        var urlCandidates = [window.location.href, window.location.search];
-        try { if (window.parent) urlCandidates.push(window.parent.location.href, window.parent.location.search); } catch (eP) { }
-        try { if (window.top) urlCandidates.push(window.top.location.href, window.top.location.search); } catch (eT) { }
-
-        for (var j = 0; j < urlCandidates.length; j++) {
-            var urlStr = urlCandidates[j] || "";
-            var m = urlStr.match(/[?&]order_?id=([^&#]+)/i);
-            if (m && m[1]) return decodeURIComponent(m[1]).trim();
-            var mInc = urlStr.match(/INC-\d{8}-\d+/i);
-            if (mInc) return mInc[0].trim();
-        }
-
         // 3. Fallback search in body text
         try {
             var bodyText = document.body ? document.body.innerText : "";
-            var matchInc = bodyText.match(/INC-\d{8}-\d+/);
+            var matchInc = bodyText.match(/(INC|PMA)-\d{8}-\d+/);
             if (matchInc) return matchInc[0].trim();
         } catch (eDom) { }
 
@@ -648,6 +655,9 @@
             serviceId: SERVICE_ESC_LOG_GET_LIST,
             data: reqPayload,
             success: function (res) {
+                // Ignore response if user switched to another ticket
+                if (String(state.orderId).trim().toUpperCase() !== targetId.toUpperCase()) return;
+
                 var rawList = [];
                 if (res) {
                     if (Array.isArray(res)) {
@@ -663,10 +673,18 @@
                     }
                 }
 
-                if (rawList.length > 0) {
+                // STRICT FILTER: Match strictly by the active ticket orderid
+                var normTargetId = targetId.toUpperCase();
+                var ticketLogs = rawList.filter(function (row) {
+                    if (!row) return false;
+                    var rId = String(row.orderid || row.order_id || row.orderId || "").trim().toUpperCase();
+                    return rId === normTargetId;
+                });
+
+                if (ticketLogs.length > 0) {
                     var maxLogLevel = 0;
                     var latestSuppStatus = null;
-                    var mappedLogs = rawList.map(function (row) {
+                    var mappedLogs = ticketLogs.map(function (row) {
                         var lType = String(row.log_type || row.type || "").toUpperCase();
                         var lNum = Number(row.esc_level !== undefined && row.esc_level !== null ? row.esc_level : (row.level !== undefined ? row.level : 0));
                         if (lType.indexOf("ESCALATION") !== -1 && !isNaN(lNum) && lNum > maxLogLevel) {
@@ -686,7 +704,7 @@
                         }
                         return {
                             id: row.id,
-                            orderid: row.orderid,
+                            orderid: targetId,
                             log_type: row.log_type || row.type || (lNum > 0 ? "ESCALATION_LEVEL" : "NEED_SUPPORT"),
                             level: lNum,
                             esc_level: lNum,
@@ -716,11 +734,13 @@
                     if (latestSuppStatus && latestSuppStatus !== state.escalationSupport) {
                         state.escalationSupport = latestSuppStatus;
                     }
-
-                    updateEscalationUI();
-                    refreshProcessTTFormEscalationFields();
+                } else {
+                    // This ticket has no logs
+                    state.escalationHistory = [];
                 }
 
+                updateEscalationUI();
+                refreshProcessTTFormEscalationFields();
                 if (callback) callback(state.escalationHistory);
             },
             error: function () {
@@ -732,7 +752,16 @@
     function loadTicketEscalationData(orderId) {
         var targetId = String(orderId || getTicketOrderId() || "").trim();
         if (!targetId) return;
+
+        // Clean state reset for target ticket to avoid stale cross-ticket data
         state.orderId = targetId;
+        state.escalationLevel = 0;
+        state.escalationSupport = "NO_NEED";
+        state.escalationHistory = [];
+        state.agingTimeStr = "";
+        state.alarmTimeStr = "";
+        state.pendingEscalationLevel = null;
+        state.pendingSupportStatus = null;
         updateEscalationUI();
 
         if (typeof MessageProcessor === "undefined" || !MessageProcessor.process) return;
@@ -745,11 +774,22 @@
             serviceId: SERVICE_DETAIL,
             data: { orderid: targetId },
             success: function (res) {
+                // Ensure response is for currently active ticket
+                if (String(state.orderId).trim().toUpperCase() !== targetId.toUpperCase()) return;
+
                 if (res && res.current_user) {
                     state.currentUser = res.current_user;
                 }
                 var detail = (res && res.data) ? res.data : {};
-                var logs = (res && Array.isArray(res.escalation_logs)) ? res.escalation_logs : [];
+                var rawLogs = (res && Array.isArray(res.escalation_logs)) ? res.escalation_logs : [];
+
+                // Filter logs to match this ticket only
+                var normTargetId = targetId.toUpperCase();
+                var logs = rawLogs.filter(function (row) {
+                    if (!row) return false;
+                    var rId = String(row.orderid || row.order_id || row.orderId || "").trim().toUpperCase();
+                    return rId === normTargetId;
+                });
 
                 if (logs.length > 0 && (!state.escalationHistory || state.escalationHistory.length === 0)) {
                     var maxLogLevel = 0;
