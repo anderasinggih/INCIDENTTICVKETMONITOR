@@ -317,14 +317,14 @@
         styleEl.id = "pttEscKeyframesStyle";
         styleEl.textContent =
             "@keyframes pttNeedSupportBlink {" +
-            "  0%, 3% { background-color: #ffffff; border-color: #dcdfe6; color: #f56c6c; }" +
-            "  3.1%, 100% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; }" +
+            "  0%, 3% { background-color: #ffffff; border-color: #dcdfe6; color: #dc2626; }" +
+            "  3.1%, 100% { background-color: #dc2626; border-color: #dc2626; color: #ffffff; }" +
             "}" +
             "@keyframes pttEscDoubleBlinkAlert {" +
             "  0%, 80%, 100% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
-            "  83% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; box-shadow: 0 0 6px rgba(245, 108, 108, 0.6); }" +
+            "  83% { background-color: #dc2626; border-color: #dc2626; color: #ffffff; box-shadow: 0 0 6px rgba(220, 38, 38, 0.6); }" +
             "  87% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
-            "  91% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; box-shadow: 0 0 6px rgba(245, 108, 108, 0.6); }" +
+            "  91% { background-color: #dc2626; border-color: #dc2626; color: #ffffff; box-shadow: 0 0 6px rgba(220, 38, 38, 0.6); }" +
             "  95% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
             "}";
         document.head.appendChild(styleEl);
@@ -342,11 +342,10 @@
 
         if (!document.getElementById("pttEscInlineCard")) {
             wrapper.innerHTML =
-                '<div class="ptt-esc-inline-card" id="pttEscInlineCard" onclick="window.openPttEscalationPopup()">' +
-                '  <div class="ptt-esc-inline-left">' +
+                '<div class="ptt-esc-inline-card" id="pttEscInlineCard">' +
+                '  <div class="ptt-esc-inline-left" onclick="window.openPttEscalationPopup()">' +
                 '    <div class="ptt-esc-inline-title-row">' +
                 '      <span class="ptt-esc-inline-label">Escalation Level &amp; Support</span>' +
-                '      <span class="ptt-esc-ticket-badge" id="pttEscInlineTicketId">-</span>' +
                 '      <span class="ptt-esc-summary-badge" id="pttEscInlineLevelBadge">No Level</span>' +
                 '    </div>' +
                 '    <div class="ptt-esc-inline-dots-row">' +
@@ -365,7 +364,7 @@
                 '      <span id="pttEscInlineSupportText">No Need Support</span>' +
                 '    </button>' +
                 '    <button type="button" class="ptt-esc-open-btn" id="pttEscOpenModalBtn" onclick="window.openPttEscalationPopup()">' +
-                '      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
                 '        <path d="M12 20h9"></path>' +
                 '        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>' +
                 '      </svg>' +
@@ -391,7 +390,6 @@
             '    <div class="ptt-esc-modal-header">' +
             '      <div class="ptt-esc-header-title-group">' +
             '        <span class="ptt-esc-modal-title">Escalation Level &amp; Support</span>' +
-            '        <span class="ptt-esc-ticket-badge" id="pttEscModalOrderId">-</span>' +
             '      </div>' +
             '      <button type="button" class="ptt-esc-close-btn" onclick="window.closePttEscalationPopup()">&#10005;</button>' +
             '    </div>' +
@@ -456,7 +454,7 @@
             '          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>' +
             '        </div>' +
             '        <div class="ptt-esc-confirm-message">' +
-            '          Are you sure you want to escalate this ticket to <strong id="pttEscPendingLevelTargetText" style="color: #409eff;">Level -</strong>?<br>' +
+            '          Are you sure you want to escalate this ticket to <strong id="pttEscPendingLevelTargetText" style="color: #2563eb;">Level -</strong>?<br>' +
             '          <span style="font-size: 12px; color: #64748b; margin-top: 2px; display: block;">This action will be recorded in the escalation log and injected into the ticket chronology.</span>' +
             '        </div>' +
             '      </div>' +
@@ -631,14 +629,14 @@
                     if (isSupport) {
                         var st = item.support_status || item.status;
                         var isNeedSupp = String(st).toUpperCase() === "NEED";
-                        var badgeBg = isNeedSupp ? "#f56c6c" : "#67c23a";
+                        var badgeBg = isNeedSupp ? "#dc2626" : "#16a34a";
                         var label = isNeedSupp ? "Need Support" : "No Need Support";
                         htmlHist += '    <span style="color: #ffffff; background: ' + badgeBg + '; padding: 2px 7px; border-radius: 4px; font-weight: 700; font-size: 11px;">' + label + '</span>';
-                        htmlHist += '    <span>Set at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
+                        htmlHist += '    <span>Set at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #2563eb;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     } else {
                         var lvlVal = item.esc_level !== undefined && item.esc_level !== null ? item.esc_level : (item.level !== undefined ? item.level : "-");
                         htmlHist += '    <span class="ptt-esc-summary-badge is-active-l' + lvlVal + '" style="font-size: 11px; padding: 2px 7px; font-weight: 700;">Level ' + lvlVal + '</span>';
-                        htmlHist += '    <span>Triggered at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
+                        htmlHist += '    <span>Triggered at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #2563eb;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     }
                     htmlHist += '  </div>';
 

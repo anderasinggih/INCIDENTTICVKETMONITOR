@@ -1,14 +1,16 @@
 /* ==========================================================================
    PROCESS TT (TT11) ESCALATION LEVEL & SUPPORT HTML PANEL STYLES
-   Native OWS White / Light Design System (Huawei GDE / Element UI Style)
+   Native OWS White / Seamless Design System (Huawei GDE / Element UI Style)
    ========================================================================== */
 
 .ptt-esc-wrapper {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   box-sizing: border-box;
   width: 100%;
-  margin: 4px 0;
+  margin: 0;
+  padding: 4px 0 8px 0;
   color: #303133;
+  font-size: 12px;
 }
 
 .ptt-esc-wrapper *,
@@ -18,7 +20,7 @@
 }
 
 /* ==========================================================================
-   INLINE TRIGGER PANEL IN PROCESS TT FORM (White Card)
+   INLINE TRIGGER PANEL IN PROCESS TT FORM (Seamless, No Border, No Box-Shadow)
    ========================================================================== */
 .ptt-esc-inline-card {
   display: flex;
@@ -26,24 +28,18 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 10px 16px;
-  background-color: #ffffff;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-}
-
-.ptt-esc-inline-card:hover {
-  border-color: #b3d8ff;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.12);
+  padding: 4px 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .ptt-esc-inline-left {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  cursor: pointer;
 }
 
 .ptt-esc-inline-title-row {
@@ -54,39 +50,29 @@
 }
 
 .ptt-esc-inline-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #303133;
-  letter-spacing: 0.2px;
-}
-
-.ptt-esc-ticket-badge {
   font-size: 12px;
   font-weight: 600;
-  color: #409eff;
-  background-color: #ecf5ff;
-  border: 1px solid #d9ecff;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #303133;
+  line-height: 1.4;
 }
 
 .ptt-esc-inline-dots-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .ptt-esc-dots-group {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
-/* Level Indicator Dots: Solid, Vivid, Non-Soft in Lightmode */
+/* Level Indicator Dots: Solid, Rich, High-Contrast Saturated Colors */
 .ptt-esc-dot {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -96,37 +82,39 @@
   background-color: #f4f4f5;
   color: #909399;
   border: 1px solid #dcdfe6;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  user-select: none;
 }
 
 .ptt-esc-dot.is-active-l1 {
   background-color: #0d9488;
   color: #ffffff;
-  border-color: #0f766e;
+  border-color: #0d9488;
 }
 
 .ptt-esc-dot.is-active-l2 {
-  background-color: #0284c7;
+  background-color: #2563eb;
   color: #ffffff;
-  border-color: #0369a1;
+  border-color: #2563eb;
 }
 
+/* Level 3: Radiant Golden Amber Yellow (Clean, Bright & Beautiful) */
 .ptt-esc-dot.is-active-l3 {
-  background-color: #d97706;
+  background-color: #f59e0b;
   color: #ffffff;
-  border-color: #b45309;
+  border-color: #f59e0b;
 }
 
 .ptt-esc-dot.is-active-l4 {
   background-color: #ea580c;
   color: #ffffff;
-  border-color: #c2410c;
+  border-color: #ea580c;
 }
 
 .ptt-esc-dot.is-active-l5 {
   background-color: #dc2626;
   color: #ffffff;
-  border-color: #b91c1c;
+  border-color: #dc2626;
 }
 
 .ptt-esc-dot.blink-alert {
@@ -134,8 +122,9 @@
 }
 
 .ptt-esc-inline-hint {
-  font-size: 12px;
+  font-size: 11px;
   color: #909399;
+  margin-left: 2px;
 }
 
 .ptt-esc-inline-right {
@@ -145,7 +134,7 @@
   flex-wrap: wrap;
 }
 
-/* OWS Native Button Style: Clean 4px radius, no excessive glow */
+/* Edit Escalation Button: Rich Vivid Blue (Never Pale/Pudar) */
 .ptt-esc-open-btn {
   display: inline-flex;
   align-items: center;
@@ -153,12 +142,12 @@
   gap: 6px;
   height: 28px;
   padding: 0 12px;
-  background-color: #409eff;
+  background-color: #2563eb;
   color: #ffffff;
-  border: 1px solid #409eff;
+  border: 1px solid #2563eb;
   border-radius: 4px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
@@ -166,60 +155,62 @@
 }
 
 .ptt-esc-open-btn:hover {
-  background-color: #66b1ff;
-  border-color: #66b1ff;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .ptt-esc-open-btn:active {
-  background-color: #3a8ee6;
-  border-color: #3a8ee6;
+  background-color: #1e40af;
+  border-color: #1e40af;
 }
 
-/* Summary Level Badges: Solid, Bold & Crisp in Lightmode */
+/* Summary Level Badges: Solid, Bold, Vibrant High-Contrast */
 .ptt-esc-summary-badge {
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 1px 7px;
+  border-radius: 3px;
   background-color: #909399;
   color: #ffffff;
   border: 1px solid #909399;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  line-height: 1.4;
 }
 
 .ptt-esc-summary-badge.is-active-l1 {
   background-color: #0d9488;
   color: #ffffff;
-  border-color: #0f766e;
+  border-color: #0d9488;
 }
 
 .ptt-esc-summary-badge.is-active-l2 {
-  background-color: #0284c7;
+  background-color: #2563eb;
   color: #ffffff;
-  border-color: #0369a1;
+  border-color: #2563eb;
 }
 
+/* Level 3: Radiant Golden Amber Yellow */
 .ptt-esc-summary-badge.is-active-l3 {
-  background-color: #d97706;
+  background-color: #f59e0b;
   color: #ffffff;
-  border-color: #b45309;
+  border-color: #f59e0b;
 }
 
 .ptt-esc-summary-badge.is-active-l4 {
   background-color: #ea580c;
   color: #ffffff;
-  border-color: #c2410c;
+  border-color: #ea580c;
 }
 
 .ptt-esc-summary-badge.is-active-l5 {
   background-color: #dc2626;
   color: #ffffff;
-  border-color: #b91c1c;
+  border-color: #dc2626;
 }
 
-/* OWS Support Button: Solid Success / Danger Button Style */
+/* Support Status Buttons: Saturated & Vivid (Never Pale/Pudar) */
 .ptt-esc-support-btn {
   display: inline-flex;
   align-items: center;
@@ -229,7 +220,7 @@
   padding: 0 12px;
   border-radius: 4px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid transparent;
   transition: all 0.15s ease;
   cursor: pointer;
@@ -239,36 +230,36 @@
 }
 
 .ptt-esc-support-btn.support-no-need {
-  background-color: #67c23a;
+  background-color: #16a34a;
   color: #ffffff;
-  border-color: #67c23a;
+  border-color: #16a34a;
 }
 
 .ptt-esc-support-btn.support-no-need:hover {
-  background-color: #85ce61;
-  border-color: #85ce61;
+  background-color: #15803d;
+  border-color: #15803d;
 }
 
 .ptt-esc-support-btn.support-no-need:active {
-  background-color: #5daf34;
-  border-color: #5daf34;
+  background-color: #166534;
+  border-color: #166534;
 }
 
 .ptt-esc-support-btn.support-need {
-  background-color: #f56c6c;
+  background-color: #dc2626;
   color: #ffffff;
-  border-color: #f56c6c;
+  border-color: #dc2626;
   animation: pttNeedSupportBlink 2s steps(1, end) infinite;
 }
 
 .ptt-esc-support-btn.support-need:hover {
-  background-color: #f78989;
-  border-color: #f78989;
+  background-color: #b91c1c;
+  border-color: #b91c1c;
 }
 
 .ptt-esc-support-btn.support-need:active {
-  background-color: #dd6161;
-  border-color: #dd6161;
+  background-color: #991b1b;
+  border-color: #991b1b;
 }
 
 /* ==========================================================================
@@ -300,7 +291,7 @@
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   width: 100%;
-  max-width: 600px;
+  max-width: 580px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
@@ -317,7 +308,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-bottom: 1px solid #ebeef5;
   background-color: #ffffff;
 }
@@ -325,12 +316,12 @@
 .ptt-esc-header-title-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .ptt-esc-modal-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #303133;
 }
@@ -348,24 +339,24 @@
 }
 
 .ptt-esc-close-btn:hover {
-  color: #409eff;
+  color: #2563eb;
   background-color: #f2f6fc;
 }
 
 .ptt-esc-modal-body {
-  padding: 18px;
+  padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   background-color: #ffffff;
 }
 
 .ptt-esc-section-box {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 12px;
+  padding: 12px 14px;
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
@@ -407,7 +398,7 @@
 .ptt-esc-steps-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -415,9 +406,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 14px;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
@@ -431,9 +422,9 @@
 }
 
 .ptt-esc-step-btn:hover:not(:disabled) {
-  border-color: #c6e2ff;
-  color: #409eff;
-  background-color: #ecf5ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+  background-color: #eff6ff;
 }
 
 .ptt-esc-step-btn .step-indicator {
@@ -443,7 +434,7 @@
   background-color: #c0c4cc;
 }
 
-/* Active Step Buttons: Solid, Non-Soft in Lightmode */
+/* Active Step Buttons: Solid, Non-Soft, Vibrant */
 .ptt-esc-step-btn.is-active-l1 {
   background-color: #0d9488;
   border-color: #0d9488;
@@ -455,8 +446,8 @@
 }
 
 .ptt-esc-step-btn.is-active-l2 {
-  background-color: #0284c7;
-  border-color: #0284c7;
+  background-color: #2563eb;
+  border-color: #2563eb;
   color: #ffffff;
   font-weight: 600;
 }
@@ -465,8 +456,8 @@
 }
 
 .ptt-esc-step-btn.is-active-l3 {
-  background-color: #d97706;
-  border-color: #d97706;
+  background-color: #f59e0b;
+  border-color: #f59e0b;
   color: #ffffff;
   font-weight: 600;
 }
@@ -541,9 +532,9 @@
 }
 
 .ptt-esc-btn-export:hover:not(:disabled) {
-  background-color: #ecf5ff;
-  border-color: #c6e2ff;
-  color: #409eff;
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
 }
 
 .ptt-esc-btn-export:disabled {
@@ -579,16 +570,16 @@
 /* Confirmation Modal Fields & Buttons */
 .ptt-esc-confirm-row {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: flex-start;
 }
 
 .ptt-esc-confirm-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: #ecf5ff;
-  color: #409eff;
+  background-color: #eff6ff;
+  color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -596,7 +587,7 @@
 }
 
 .ptt-esc-confirm-message {
-  font-size: 13px;
+  font-size: 12px;
   color: #303133;
   line-height: 1.5;
 }
@@ -619,9 +610,9 @@
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   color: #303133;
-  font-size: 13px;
+  font-size: 12px;
   font-family: inherit;
   resize: vertical;
   outline: none;
@@ -629,16 +620,16 @@
 }
 
 .ptt-esc-textarea:focus {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
 .ptt-esc-modal-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 12px 18px;
+  gap: 8px;
+  padding: 10px 16px;
   border-top: 1px solid #ebeef5;
   background-color: #f8fafc;
 }
@@ -648,12 +639,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
+  height: 30px;
   background-color: #ffffff;
   color: #606266;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 0 15px;
+  padding: 0 14px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -662,36 +653,36 @@
 }
 
 .ptt-esc-btn-cancel:hover {
-  background-color: #ecf5ff;
-  color: #409eff;
-  border-color: #c6e2ff;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
 }
 
 .ptt-esc-btn-submit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  background-color: #409eff;
+  height: 30px;
+  background-color: #2563eb;
   color: #ffffff;
-  border: 1px solid #409eff;
+  border: 1px solid #2563eb;
   border-radius: 4px;
-  padding: 0 15px;
+  padding: 0 16px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
   box-sizing: border-box;
 }
 
 .ptt-esc-btn-submit:hover:not(:disabled) {
-  background-color: #66b1ff;
-  border-color: #66b1ff;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .ptt-esc-btn-submit:active:not(:disabled) {
-  background-color: #3a8ee6;
-  border-color: #3a8ee6;
+  background-color: #1e40af;
+  border-color: #1e40af;
 }
 
 .ptt-esc-btn-submit:disabled {
@@ -708,8 +699,8 @@
   color: #303133;
   border: 1px solid #e4e7ed;
   border-radius: 4px;
-  padding: 10px 16px;
-  font-size: 13px;
+  padding: 8px 14px;
+  font-size: 12px;
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   z-index: 999999;
@@ -725,9 +716,9 @@
 }
 
 .ptt-esc-toast.toast-success {
-  border-left: 4px solid #67c23a;
+  border-left: 4px solid #16a34a;
 }
 
 .ptt-esc-toast.toast-error {
-  border-left: 4px solid #f56c6c;
+  border-left: 4px solid #dc2626;
 }
