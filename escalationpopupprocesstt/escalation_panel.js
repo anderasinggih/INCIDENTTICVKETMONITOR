@@ -1013,6 +1013,44 @@
         state.modalMouseDownTarget = null;
     };
 
+    // =========================================================================
+    // KEYBOARD NAVIGATION (ESCAPE KEY TO CLOSE POPUPS)
+    // =========================================================================
+    function handleGlobalEscKey(e) {
+        if (!e) e = window.event;
+        var key = e.key || e.keyCode;
+        if (key === "Escape" || key === "Esc" || key === 27) {
+            var confirmSuppModal = document.getElementById("pttEscConfirmSupportModal");
+            if (confirmSuppModal && (confirmSuppModal.style.display === "flex" || confirmSuppModal.offsetHeight > 0)) {
+                window.closePttConfirmSupportModal();
+                if (e.stopPropagation) e.stopPropagation();
+                if (e.preventDefault) e.preventDefault();
+                return;
+            }
+
+            var confirmLevelModal = document.getElementById("pttEscConfirmLevelModal");
+            if (confirmLevelModal && (confirmLevelModal.style.display === "flex" || confirmLevelModal.offsetHeight > 0)) {
+                window.closePttConfirmLevelModal();
+                if (e.stopPropagation) e.stopPropagation();
+                if (e.preventDefault) e.preventDefault();
+                return;
+            }
+
+            var mainModal = document.getElementById("pttEscMainModal");
+            if (mainModal && (mainModal.style.display === "flex" || mainModal.offsetHeight > 0)) {
+                window.closePttEscalationPopup();
+                if (e.stopPropagation) e.stopPropagation();
+                if (e.preventDefault) e.preventDefault();
+                return;
+            }
+        }
+    }
+
+    if (!window._pttEscKeydownAttached) {
+        document.addEventListener("keydown", handleGlobalEscKey, true);
+        window._pttEscKeydownAttached = true;
+    }
+
     window.executePttConfirmedSupport = function () {
         var targetSupp = state.pendingSupportStatus;
         if (!targetSupp) {
