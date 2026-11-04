@@ -320,12 +320,12 @@
             "  0%, 3% { background-color: #ffffff; border-color: #ffffff; color: #dc2626; }" +
             "  3.1%, 100% { background-color: #dc2626; border-color: #ef4444; color: #ffffff; }" +
             "}" +
-            "@keyframes pttEscDoubleBlinkWhite {" +
-            "  0%, 80%, 100% { background-color: #27272a; border-color: #52525b; color: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }" +
-            "  83% { background-color: #ffffff; border-color: #ffffff; color: #18181b; box-shadow: 0 0 10px rgba(255, 255, 255, 0.9); }" +
-            "  87% { background-color: #27272a; border-color: #52525b; color: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }" +
-            "  91% { background-color: #ffffff; border-color: #ffffff; color: #18181b; box-shadow: 0 0 10px rgba(255, 255, 255, 0.9); }" +
-            "  95% { background-color: #27272a; border-color: #52525b; color: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }" +
+            "@keyframes pttEscDoubleBlinkAlert {" +
+            "  0%, 80%, 100% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
+            "  83% { background-color: #fee2e2; border-color: #ef4444; color: #b91c1c; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }" +
+            "  87% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
+            "  91% { background-color: #fee2e2; border-color: #ef4444; color: #b91c1c; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }" +
+            "  95% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
             "}";
         document.head.appendChild(styleEl);
     }
@@ -456,8 +456,8 @@
             '          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>' +
             '        </div>' +
             '        <div class="ptt-esc-confirm-message">' +
-            '          Are you sure you want to escalate this ticket to <strong id="pttEscPendingLevelTargetText" style="color: #38bdf8;">Level -</strong>?<br>' +
-            '          <span style="font-size: 12px; color: #a1a1aa; margin-top: 2px; display: block;">This action will be recorded in the escalation log and injected into the ticket chronology.</span>' +
+            '          Are you sure you want to escalate this ticket to <strong id="pttEscPendingLevelTargetText" style="color: #409eff;">Level -</strong>?<br>' +
+            '          <span style="font-size: 12px; color: #64748b; margin-top: 2px; display: block;">This action will be recorded in the escalation log and injected into the ticket chronology.</span>' +
             '        </div>' +
             '      </div>' +
             '      <div class="ptt-esc-field">' +
@@ -492,7 +492,7 @@
             '        </div>' +
             '        <div class="ptt-esc-confirm-message">' +
             '          Change support status for this ticket to <strong id="pttEscPendingSupportTargetText">-</strong>?<br>' +
-            '          <span style="font-size: 12px; color: #a1a1aa; margin-top: 2px; display: block;">This status change will be recorded in the escalation log and ticket chronology.</span>' +
+            '          <span style="font-size: 12px; color: #64748b; margin-top: 2px; display: block;">This status change will be recorded in the escalation log and ticket chronology.</span>' +
             '        </div>' +
             '      </div>' +
             '      <div class="ptt-esc-field">' +
@@ -615,7 +615,7 @@
             } else {
                 var htmlHist =
                     '<div class="ptt-esc-history-header">' +
-                    '  <span style="font-size: 11px; font-weight: 600; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.04em;">Escalation Logs (' + historyList.length + ')</span>' +
+                    '  <span style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;">Escalation Logs (' + historyList.length + ')</span>' +
                     '  <button type="button" class="ptt-esc-btn-export" id="pttEscBtnExportLog" onclick="window.exportPttEscalationLogsToExcel()">' +
                     '    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
                     '    <span>Export Log</span>' +
@@ -631,15 +631,15 @@
                     if (isSupport) {
                         var st = item.support_status || item.status;
                         var isNeedSupp = String(st).toUpperCase() === "NEED";
-                        var badgeColor = isNeedSupp ? "#f87171" : "#4ade80";
-                        var badgeBg = isNeedSupp ? "rgba(239, 68, 68, 0.15)" : "rgba(34, 197, 94, 0.15)";
+                        var badgeColor = isNeedSupp ? "#dc2626" : "#16a34a";
+                        var badgeBg = isNeedSupp ? "#fee2e2" : "#dcfce7";
                         var label = isNeedSupp ? "Need Support" : "No Need Support";
                         htmlHist += '    <span style="color: ' + badgeColor + '; background: ' + badgeBg + '; padding: 1px 6px; border-radius: 4px; font-weight: 600;">' + label + '</span>';
-                        htmlHist += '    <span>Set at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #38bdf8;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
+                        htmlHist += '    <span>Set at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     } else {
                         var lvlVal = item.esc_level !== undefined && item.esc_level !== null ? item.esc_level : (item.level !== undefined ? item.level : "-");
-                        htmlHist += '    <span style="color: #fafafa; font-weight: 600;">Level ' + lvlVal + ':</span>';
-                        htmlHist += '    <span>Triggered at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #38bdf8;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
+                        htmlHist += '    <span style="color: #303133; font-weight: 600;">Level ' + lvlVal + ':</span>';
+                        htmlHist += '    <span>Triggered at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     }
                     htmlHist += '  </div>';
 
@@ -977,22 +977,22 @@
         if (targetSupp === "NEED") {
             if (targetText) {
                 targetText.textContent = "Need Support";
-                targetText.style.color = "#f87171";
+                targetText.style.color = "#dc2626";
             }
             if (modalTitle) modalTitle.textContent = "Request Support";
             if (modalIcon) {
-                modalIcon.style.backgroundColor = "rgba(239, 68, 68, 0.15)";
-                modalIcon.style.color = "#f87171";
+                modalIcon.style.backgroundColor = "#fee2e2";
+                modalIcon.style.color = "#dc2626";
             }
         } else {
             if (targetText) {
                 targetText.textContent = "No Need Support";
-                targetText.style.color = "#4ade80";
+                targetText.style.color = "#16a34a";
             }
             if (modalTitle) modalTitle.textContent = "Cancel Support Request";
             if (modalIcon) {
-                modalIcon.style.backgroundColor = "rgba(34, 197, 94, 0.15)";
-                modalIcon.style.color = "#4ade80";
+                modalIcon.style.backgroundColor = "#dcfce7";
+                modalIcon.style.color = "#16a34a";
             }
         }
 

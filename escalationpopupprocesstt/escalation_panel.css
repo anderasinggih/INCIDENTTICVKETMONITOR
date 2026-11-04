@@ -1,14 +1,14 @@
 /* ==========================================================================
    PROCESS TT (TT11) ESCALATION LEVEL & SUPPORT HTML PANEL STYLES
-   Matches Incident Ticket Monitor dark modal & badge design system
+   Native OWS White / Light Design System (Huawei GDE / Element UI Style)
    ========================================================================== */
 
 .ptt-esc-wrapper {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   box-sizing: border-box;
   width: 100%;
   margin: 4px 0;
-  color: #fafafa;
+  color: #303133;
 }
 
 .ptt-esc-wrapper *,
@@ -17,25 +17,27 @@
   box-sizing: border-box;
 }
 
-/* Inline Trigger Panel in Process TT Form */
+/* ==========================================================================
+   INLINE TRIGGER PANEL IN PROCESS TT FORM (White Card)
+   ========================================================================== */
 .ptt-esc-inline-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 12px 16px;
-  background-color: #18181b;
-  border: 1px solid #27272a;
-  border-radius: 10px;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .ptt-esc-inline-card:hover {
-  border-color: #3f3f46;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #b3d8ff;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.12);
 }
 
 .ptt-esc-inline-left {
@@ -54,18 +56,18 @@
 .ptt-esc-inline-label {
   font-size: 13px;
   font-weight: 700;
-  color: #f4f4f5;
+  color: #303133;
   letter-spacing: 0.2px;
 }
 
 .ptt-esc-ticket-badge {
   font-size: 12px;
   font-weight: 600;
-  color: #38bdf8;
-  background-color: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #2563eb;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
   padding: 2px 8px;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .ptt-esc-inline-dots-row {
@@ -78,7 +80,7 @@
 .ptt-esc-dots-group {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .ptt-esc-dot {
@@ -90,49 +92,49 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  background-color: #27272a;
-  color: #71717a;
-  border: 1px solid #3f3f46;
+  background-color: #f4f4f5;
+  color: #909399;
+  border: 1px solid #dcdfe6;
   transition: all 0.2s ease;
 }
 
 .ptt-esc-dot.is-active-l1 {
-  background-color: rgba(13, 148, 136, 0.25);
-  color: #14b8a6;
+  background-color: #ccfbf1;
+  color: #0f766e;
   border-color: #14b8a6;
 }
 
 .ptt-esc-dot.is-active-l2 {
-  background-color: rgba(2, 132, 199, 0.25);
-  color: #38bdf8;
+  background-color: #e0f2fe;
+  color: #0369a1;
   border-color: #38bdf8;
 }
 
 .ptt-esc-dot.is-active-l3 {
-  background-color: rgba(234, 179, 8, 0.25);
-  color: #facc15;
+  background-color: #fef3c7;
+  color: #b45309;
   border-color: #facc15;
 }
 
 .ptt-esc-dot.is-active-l4 {
-  background-color: rgba(234, 88, 12, 0.25);
-  color: #fb923c;
+  background-color: #ffedd5;
+  color: #c2410c;
   border-color: #fb923c;
 }
 
 .ptt-esc-dot.is-active-l5 {
-  background-color: rgba(220, 38, 38, 0.25);
-  color: #f87171;
+  background-color: #fee2e2;
+  color: #b91c1c;
   border-color: #f87171;
 }
 
 .ptt-esc-dot.blink-alert {
-  animation: pttEscDoubleBlinkWhite 1.3s ease-in-out infinite;
+  animation: pttEscDoubleBlinkAlert 1.4s ease-in-out infinite;
 }
 
 .ptt-esc-inline-hint {
-  font-size: 11px;
-  color: #a1a1aa;
+  font-size: 12px;
+  color: #909399;
 }
 
 .ptt-esc-inline-right {
@@ -146,20 +148,22 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #2563eb;
+  background-color: #409eff;
   color: #ffffff;
-  border: 1px solid #3b82f6;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border: 1px solid #409eff;
+  border-radius: 4px;
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
 }
 
 .ptt-esc-open-btn:hover {
-  background-color: #1d4ed8;
-  border-color: #60a5fa;
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+  box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
 }
 
 /* Summary Level Badge */
@@ -168,39 +172,39 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 4px;
-  background-color: #27272a;
-  color: #a1a1aa;
-  border: 1px solid #3f3f46;
+  background-color: #f4f4f5;
+  color: #909399;
+  border: 1px solid #e9e9eb;
 }
 
 .ptt-esc-summary-badge.is-active-l1 {
-  background-color: rgba(13, 148, 136, 0.2);
-  color: #14b8a6;
-  border-color: #14b8a6;
+  background-color: #f0fdfa;
+  color: #0f766e;
+  border-color: #5eead4;
 }
 
 .ptt-esc-summary-badge.is-active-l2 {
-  background-color: rgba(2, 132, 199, 0.2);
-  color: #38bdf8;
-  border-color: #38bdf8;
+  background-color: #f0f9ff;
+  color: #0369a1;
+  border-color: #7dd3fc;
 }
 
 .ptt-esc-summary-badge.is-active-l3 {
-  background-color: rgba(234, 179, 8, 0.2);
-  color: #facc15;
-  border-color: #facc15;
+  background-color: #fffbeb;
+  color: #b45309;
+  border-color: #fde047;
 }
 
 .ptt-esc-summary-badge.is-active-l4 {
-  background-color: rgba(234, 88, 12, 0.2);
-  color: #fb923c;
-  border-color: #fb923c;
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #fdba74;
 }
 
 .ptt-esc-summary-badge.is-active-l5 {
-  background-color: rgba(220, 38, 38, 0.2);
-  color: #f87171;
-  border-color: #f87171;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
 }
 
 /* Need Support Toggle Button */
@@ -210,7 +214,7 @@
   justify-content: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   border: 1px solid transparent;
@@ -218,17 +222,18 @@
   transition: all 0.2s ease;
   cursor: pointer;
   white-space: nowrap;
+  user-select: none;
 }
 
 .ptt-esc-support-btn.support-no-need {
-  background-color: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
-  border-color: rgba(34, 197, 94, 0.4);
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
 }
 
 .ptt-esc-support-btn.support-no-need:hover {
-  background-color: rgba(34, 197, 94, 0.25);
-  border-color: #4ade80;
+  background-color: #dcfce7;
+  border-color: #86efac;
 }
 
 .ptt-esc-support-btn.support-need {
@@ -241,11 +246,11 @@
 
 .ptt-esc-support-btn.support-need:hover {
   background-color: #b91c1c;
-  border-color: #f87171;
+  border-color: #dc2626;
 }
 
 /* ==========================================================================
-   MODAL OVERLAY & DIALOGS (Ticket Monitor Edit Popup Style)
+   MODAL OVERLAY & DIALOGS (White / Light Native OWS Theme)
    ========================================================================== */
 
 .ptt-esc-modal-overlay {
@@ -256,8 +261,8 @@
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(9, 9, 11, 0.78);
-  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
   display: none;
   align-items: center;
   justify-content: center;
@@ -270,16 +275,16 @@
 }
 
 .ptt-esc-modal-dialog {
-  background-color: #18181b;
-  border: 1px solid #27272a;
-  border-radius: 12px;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
   width: 100%;
-  max-width: 620px;
+  max-width: 600px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
-  color: #fafafa;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  color: #303133;
   overflow: hidden;
 }
 
@@ -292,8 +297,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  border-bottom: 1px solid #27272a;
-  background-color: #18181b;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #ffffff;
 }
 
 .ptt-esc-header-title-group {
@@ -305,25 +310,25 @@
 
 .ptt-esc-modal-title {
   font-size: 15px;
-  font-weight: 700;
-  color: #fafafa;
+  font-weight: 600;
+  color: #303133;
 }
 
 .ptt-esc-close-btn {
   background: transparent;
   border: none;
-  color: #a1a1aa;
+  color: #909399;
   font-size: 16px;
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   line-height: 1;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .ptt-esc-close-btn:hover {
-  color: #ffffff;
-  background-color: #27272a;
+  color: #409eff;
+  background-color: #f2f6fc;
 }
 
 .ptt-esc-modal-body {
@@ -331,7 +336,8 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  background-color: #ffffff;
 }
 
 .ptt-esc-section-box {
@@ -339,9 +345,9 @@
   flex-direction: column;
   gap: 14px;
   padding: 14px 16px;
-  background-color: #121215;
-  border: 1px solid #27272a;
-  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
 }
 
 .ptt-esc-section-top {
@@ -362,16 +368,16 @@
 .ptt-esc-section-label {
   font-size: 12px;
   font-weight: 600;
-  color: #d4d4d8;
+  color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .ptt-esc-aging-badge {
   font-size: 11px;
-  color: #a1a1aa;
-  background-color: #18181b;
-  border: 1px solid #27272a;
+  color: #64748b;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   padding: 2px 7px;
   border-radius: 4px;
 }
@@ -388,77 +394,74 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #18181b;
-  border: 1px solid #3f3f46;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
   border-radius: 6px;
-  padding: 8px 14px;
+  padding: 7px 14px;
   font-size: 13px;
   font-weight: 600;
-  color: #a1a1aa;
+  color: #606266;
   cursor: pointer;
   transition: all 0.2s ease;
+  user-select: none;
 }
 
 .ptt-esc-step-btn:hover:not(:disabled) {
-  border-color: #71717a;
-  color: #fafafa;
+  border-color: #409eff;
+  color: #409eff;
+  background-color: #ecf5ff;
 }
 
 .ptt-esc-step-btn .step-indicator {
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #52525b;
+  background-color: #c0c4cc;
 }
 
 .ptt-esc-step-btn.is-active-l1 {
-  background-color: rgba(13, 148, 136, 0.15);
+  background-color: #f0fdfa;
   border-color: #14b8a6;
-  color: #14b8a6;
+  color: #0f766e;
 }
 .ptt-esc-step-btn.is-active-l1 .step-indicator {
   background-color: #14b8a6;
-  box-shadow: 0 0 6px #14b8a6;
 }
 
 .ptt-esc-step-btn.is-active-l2 {
-  background-color: rgba(2, 132, 199, 0.15);
+  background-color: #f0f9ff;
   border-color: #38bdf8;
-  color: #38bdf8;
+  color: #0369a1;
 }
 .ptt-esc-step-btn.is-active-l2 .step-indicator {
-  background-color: #38bdf8;
-  box-shadow: 0 0 6px #38bdf8;
+  background-color: #0284c7;
 }
 
 .ptt-esc-step-btn.is-active-l3 {
-  background-color: rgba(234, 179, 8, 0.15);
+  background-color: #fffbeb;
   border-color: #facc15;
-  color: #facc15;
+  color: #b45309;
 }
 .ptt-esc-step-btn.is-active-l3 .step-indicator {
-  background-color: #facc15;
-  box-shadow: 0 0 6px #facc15;
+  background-color: #f59e0b;
 }
 
 .ptt-esc-step-btn.is-active-l4 {
-  background-color: rgba(234, 88, 12, 0.15);
+  background-color: #fff7ed;
   border-color: #fb923c;
-  color: #fb923c;
+  color: #c2410c;
 }
 .ptt-esc-step-btn.is-active-l4 .step-indicator {
-  background-color: #fb923c;
-  box-shadow: 0 0 6px #fb923c;
+  background-color: #f97316;
 }
 
 .ptt-esc-step-btn.is-active-l5 {
-  background-color: rgba(220, 38, 38, 0.15);
+  background-color: #fef2f2;
   border-color: #f87171;
-  color: #f87171;
+  color: #b91c1c;
 }
 .ptt-esc-step-btn.is-active-l5 .step-indicator {
-  background-color: #f87171;
-  box-shadow: 0 0 6px #f87171;
+  background-color: #ef4444;
 }
 
 .ptt-esc-step-btn.blink-alert-l1,
@@ -466,7 +469,7 @@
 .ptt-esc-step-btn.blink-alert-l3,
 .ptt-esc-step-btn.blink-alert-l4,
 .ptt-esc-step-btn.blink-alert-l5 {
-  animation: pttEscDoubleBlinkWhite 1.3s ease-in-out infinite;
+  animation: pttEscDoubleBlinkAlert 1.4s ease-in-out infinite;
 }
 
 /* Escalation History Log List */
@@ -475,9 +478,9 @@
   flex-direction: column;
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed #cbd5e1;
   font-size: 12px;
-  color: #a1a1aa;
+  color: #64748b;
   max-height: 240px;
   overflow-y: auto;
 }
@@ -493,10 +496,10 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background-color: #18181b;
-  color: #f4f4f5;
-  border: 1px solid #3f3f46;
-  border-radius: 5px;
+  background-color: #ffffff;
+  color: #606266;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 500;
@@ -505,9 +508,9 @@
 }
 
 .ptt-esc-btn-export:hover:not(:disabled) {
-  background-color: #27272a;
-  border-color: #71717a;
-  color: #ffffff;
+  background-color: #ecf5ff;
+  border-color: #409eff;
+  color: #409eff;
 }
 
 .ptt-esc-btn-export:disabled {
@@ -520,7 +523,7 @@
   flex-direction: column;
   gap: 3px;
   padding: 5px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .ptt-esc-history-main-row {
@@ -532,9 +535,9 @@
 
 .ptt-esc-history-note-row {
   padding-left: 8px;
-  border-left: 2px solid rgba(255, 255, 255, 0.15);
-  color: #e4e4e7;
-  font-size: 11px;
+  border-left: 2px solid #cbd5e1;
+  color: #475569;
+  font-size: 12px;
   margin-top: 2px;
   font-style: italic;
   word-break: break-word;
@@ -551,8 +554,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(2, 132, 199, 0.15);
-  color: #38bdf8;
+  background-color: #ecf5ff;
+  color: #409eff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -561,7 +564,7 @@
 
 .ptt-esc-confirm-message {
   font-size: 13px;
-  color: #e4e4e7;
+  color: #303133;
   line-height: 1.5;
 }
 
@@ -575,25 +578,26 @@
 .ptt-esc-label {
   font-size: 12px;
   font-weight: 600;
-  color: #d4d4d8;
+  color: #303133;
 }
 
 .ptt-esc-textarea {
   width: 100%;
-  background-color: #121215;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
   padding: 10px 12px;
-  color: #fafafa;
+  color: #303133;
   font-size: 13px;
   font-family: inherit;
   resize: vertical;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ptt-esc-textarea:focus {
-  border-color: #38bdf8;
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
 
 .ptt-esc-modal-footer {
@@ -602,40 +606,43 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 12px 18px;
-  border-top: 1px solid #27272a;
-  background-color: #141417;
+  border-top: 1px solid #ebeef5;
+  background-color: #f8fafc;
 }
 
 .ptt-esc-btn-cancel {
-  background-color: #27272a;
-  color: #e4e4e7;
-  border: 1px solid #3f3f46;
-  border-radius: 6px;
-  padding: 7px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.ptt-esc-btn-cancel:hover {
-  background-color: #3f3f46;
-}
-
-.ptt-esc-btn-submit {
-  background-color: #2563eb;
-  color: #ffffff;
-  border: 1px solid #3b82f6;
-  border-radius: 6px;
+  background-color: #ffffff;
+  color: #606266;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
   padding: 7px 16px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
+}
+
+.ptt-esc-btn-cancel:hover {
+  background-color: #f5f7fa;
+  color: #409eff;
+  border-color: #c6e2ff;
+}
+
+.ptt-esc-btn-submit {
+  background-color: #409eff;
+  color: #ffffff;
+  border: 1px solid #409eff;
+  border-radius: 4px;
+  padding: 7px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .ptt-esc-btn-submit:hover:not(:disabled) {
-  background-color: #1d4ed8;
+  background-color: #66b1ff;
+  border-color: #66b1ff;
 }
 
 .ptt-esc-btn-submit:disabled {
@@ -643,19 +650,19 @@
   cursor: not-allowed;
 }
 
-/* Toast Notification */
+/* Toast Notification (White Shadow Box) */
 .ptt-esc-toast {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background-color: #18181b;
-  color: #fafafa;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
+  background-color: #ffffff;
+  color: #303133;
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
   padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   z-index: 999999;
   opacity: 0;
   transform: translateY(10px);
@@ -669,10 +676,9 @@
 }
 
 .ptt-esc-toast.toast-success {
-  border-left: 4px solid #22c55e;
+  border-left: 4px solid #16a34a;
 }
 
 .ptt-esc-toast.toast-error {
   border-left: 4px solid #ef4444;
 }
-
