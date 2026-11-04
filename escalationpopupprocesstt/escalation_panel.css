@@ -29,7 +29,7 @@
   padding: 10px 16px;
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
@@ -63,9 +63,9 @@
 .ptt-esc-ticket-badge {
   font-size: 12px;
   font-weight: 600;
-  color: #2563eb;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: #409eff;
+  background-color: #ecf5ff;
+  border: 1px solid #d9ecff;
   padding: 2px 8px;
   border-radius: 4px;
 }
@@ -83,6 +83,7 @@
   gap: 6px;
 }
 
+/* Level Indicator Dots: Solid, Vivid, Non-Soft in Lightmode */
 .ptt-esc-dot {
   width: 22px;
   height: 22px;
@@ -99,33 +100,33 @@
 }
 
 .ptt-esc-dot.is-active-l1 {
-  background-color: #ccfbf1;
-  color: #0f766e;
-  border-color: #14b8a6;
+  background-color: #0d9488;
+  color: #ffffff;
+  border-color: #0f766e;
 }
 
 .ptt-esc-dot.is-active-l2 {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  border-color: #38bdf8;
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0369a1;
 }
 
 .ptt-esc-dot.is-active-l3 {
-  background-color: #fef3c7;
-  color: #b45309;
-  border-color: #facc15;
+  background-color: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
 }
 
 .ptt-esc-dot.is-active-l4 {
-  background-color: #ffedd5;
-  color: #c2410c;
-  border-color: #fb923c;
+  background-color: #ea580c;
+  color: #ffffff;
+  border-color: #c2410c;
 }
 
 .ptt-esc-dot.is-active-l5 {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-color: #f87171;
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #b91c1c;
 }
 
 .ptt-esc-dot.blink-alert {
@@ -144,113 +145,134 @@
   flex-wrap: wrap;
 }
 
+/* OWS Native Button Style: Clean 4px radius, no excessive glow */
 .ptt-esc-open-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  height: 28px;
+  padding: 0 12px;
   background-color: #409eff;
   color: #ffffff;
   border: 1px solid #409eff;
   border-radius: 4px;
-  padding: 6px 14px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .ptt-esc-open-btn:hover {
   background-color: #66b1ff;
   border-color: #66b1ff;
-  box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
 }
 
-/* Summary Level Badge */
+.ptt-esc-open-btn:active {
+  background-color: #3a8ee6;
+  border-color: #3a8ee6;
+}
+
+/* Summary Level Badges: Solid, Bold & Crisp in Lightmode */
 .ptt-esc-summary-badge {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 2px 8px;
   border-radius: 4px;
-  background-color: #f4f4f5;
-  color: #909399;
-  border: 1px solid #e9e9eb;
+  background-color: #909399;
+  color: #ffffff;
+  border: 1px solid #909399;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ptt-esc-summary-badge.is-active-l1 {
-  background-color: #f0fdfa;
-  color: #0f766e;
-  border-color: #5eead4;
+  background-color: #0d9488;
+  color: #ffffff;
+  border-color: #0f766e;
 }
 
 .ptt-esc-summary-badge.is-active-l2 {
-  background-color: #f0f9ff;
-  color: #0369a1;
-  border-color: #7dd3fc;
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0369a1;
 }
 
 .ptt-esc-summary-badge.is-active-l3 {
-  background-color: #fffbeb;
-  color: #b45309;
-  border-color: #fde047;
+  background-color: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
 }
 
 .ptt-esc-summary-badge.is-active-l4 {
-  background-color: #fff7ed;
-  color: #c2410c;
-  border-color: #fdba74;
+  background-color: #ea580c;
+  color: #ffffff;
+  border-color: #c2410c;
 }
 
 .ptt-esc-summary-badge.is-active-l5 {
-  background-color: #fef2f2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #b91c1c;
 }
 
-/* Need Support Toggle Button */
+/* OWS Support Button: Solid Success / Danger Button Style */
 .ptt-esc-support-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 5px 12px;
+  height: 28px;
+  padding: 0 12px;
   border-radius: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   border: 1px solid transparent;
-  letter-spacing: 0.2px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   cursor: pointer;
   white-space: nowrap;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .ptt-esc-support-btn.support-no-need {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border-color: #bbf7d0;
+  background-color: #67c23a;
+  color: #ffffff;
+  border-color: #67c23a;
 }
 
 .ptt-esc-support-btn.support-no-need:hover {
-  background-color: #dcfce7;
-  border-color: #86efac;
+  background-color: #85ce61;
+  border-color: #85ce61;
+}
+
+.ptt-esc-support-btn.support-no-need:active {
+  background-color: #5daf34;
+  border-color: #5daf34;
 }
 
 .ptt-esc-support-btn.support-need {
-  background-color: #dc2626;
+  background-color: #f56c6c;
   color: #ffffff;
-  border-color: #ef4444;
-  font-weight: 700;
+  border-color: #f56c6c;
   animation: pttNeedSupportBlink 2s steps(1, end) infinite;
 }
 
 .ptt-esc-support-btn.support-need:hover {
-  background-color: #b91c1c;
-  border-color: #dc2626;
+  background-color: #f78989;
+  border-color: #f78989;
+}
+
+.ptt-esc-support-btn.support-need:active {
+  background-color: #dd6161;
+  border-color: #dd6161;
 }
 
 /* ==========================================================================
-   MODAL OVERLAY & DIALOGS (White / Light Native OWS Theme)
+   MODAL OVERLAY & DIALOGS (Clean Dark Backdrop without Blur, Element UI Dialog)
    ========================================================================== */
 
 .ptt-esc-modal-overlay {
@@ -261,8 +283,7 @@
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.5); /* No blur! */
   display: none;
   align-items: center;
   justify-content: center;
@@ -277,13 +298,13 @@
 .ptt-esc-modal-dialog {
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
-  border-radius: 8px;
+  border-radius: 4px;
   width: 100%;
   max-width: 600px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   color: #303133;
   overflow: hidden;
 }
@@ -347,7 +368,7 @@
   padding: 14px 16px;
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ptt-esc-section-top {
@@ -382,7 +403,7 @@
   border-radius: 4px;
 }
 
-/* Level 1 - 5 Step Buttons */
+/* Level 1 - 5 Step Buttons (OWS Button Group Style) */
 .ptt-esc-steps-row {
   display: flex;
   align-items: center;
@@ -393,75 +414,84 @@
 .ptt-esc-step-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  height: 32px;
+  padding: 0 14px;
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
   color: #606266;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .ptt-esc-step-btn:hover:not(:disabled) {
-  border-color: #409eff;
+  border-color: #c6e2ff;
   color: #409eff;
   background-color: #ecf5ff;
 }
 
 .ptt-esc-step-btn .step-indicator {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: #c0c4cc;
 }
 
+/* Active Step Buttons: Solid, Non-Soft in Lightmode */
 .ptt-esc-step-btn.is-active-l1 {
-  background-color: #f0fdfa;
-  border-color: #14b8a6;
-  color: #0f766e;
+  background-color: #0d9488;
+  border-color: #0d9488;
+  color: #ffffff;
+  font-weight: 600;
 }
 .ptt-esc-step-btn.is-active-l1 .step-indicator {
-  background-color: #14b8a6;
+  background-color: #ffffff;
 }
 
 .ptt-esc-step-btn.is-active-l2 {
-  background-color: #f0f9ff;
-  border-color: #38bdf8;
-  color: #0369a1;
+  background-color: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+  font-weight: 600;
 }
 .ptt-esc-step-btn.is-active-l2 .step-indicator {
-  background-color: #0284c7;
+  background-color: #ffffff;
 }
 
 .ptt-esc-step-btn.is-active-l3 {
-  background-color: #fffbeb;
-  border-color: #facc15;
-  color: #b45309;
+  background-color: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+  font-weight: 600;
 }
 .ptt-esc-step-btn.is-active-l3 .step-indicator {
-  background-color: #f59e0b;
+  background-color: #ffffff;
 }
 
 .ptt-esc-step-btn.is-active-l4 {
-  background-color: #fff7ed;
-  border-color: #fb923c;
-  color: #c2410c;
+  background-color: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+  font-weight: 600;
 }
 .ptt-esc-step-btn.is-active-l4 .step-indicator {
-  background-color: #f97316;
+  background-color: #ffffff;
 }
 
 .ptt-esc-step-btn.is-active-l5 {
-  background-color: #fef2f2;
-  border-color: #f87171;
-  color: #b91c1c;
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
 }
 .ptt-esc-step-btn.is-active-l5 .step-indicator {
-  background-color: #ef4444;
+  background-color: #ffffff;
 }
 
 .ptt-esc-step-btn.blink-alert-l1,
@@ -495,21 +525,24 @@
 .ptt-esc-btn-export {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
+  height: 26px;
   background-color: #ffffff;
   color: #606266;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 0 10px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
 }
 
 .ptt-esc-btn-export:hover:not(:disabled) {
   background-color: #ecf5ff;
-  border-color: #409eff;
+  border-color: #c6e2ff;
   color: #409eff;
 }
 
@@ -610,34 +643,45 @@
   background-color: #f8fafc;
 }
 
+/* OWS Element UI Buttons: Default and Primary */
 .ptt-esc-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
   background-color: #ffffff;
   color: #606266;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 7px 16px;
+  padding: 0 15px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-sizing: border-box;
 }
 
 .ptt-esc-btn-cancel:hover {
-  background-color: #f5f7fa;
+  background-color: #ecf5ff;
   color: #409eff;
   border-color: #c6e2ff;
 }
 
 .ptt-esc-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
   background-color: #409eff;
   color: #ffffff;
   border: 1px solid #409eff;
   border-radius: 4px;
-  padding: 7px 18px;
+  padding: 0 15px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
+  box-sizing: border-box;
 }
 
 .ptt-esc-btn-submit:hover:not(:disabled) {
@@ -645,12 +689,17 @@
   border-color: #66b1ff;
 }
 
+.ptt-esc-btn-submit:active:not(:disabled) {
+  background-color: #3a8ee6;
+  border-color: #3a8ee6;
+}
+
 .ptt-esc-btn-submit:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-/* Toast Notification (White Shadow Box) */
+/* Toast Notification (Element UI Notification Style) */
 .ptt-esc-toast {
   position: fixed;
   bottom: 24px;
@@ -658,11 +707,11 @@
   background-color: #ffffff;
   color: #303133;
   border: 1px solid #e4e7ed;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   z-index: 999999;
   opacity: 0;
   transform: translateY(10px);
@@ -676,9 +725,9 @@
 }
 
 .ptt-esc-toast.toast-success {
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid #67c23a;
 }
 
 .ptt-esc-toast.toast-error {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid #f56c6c;
 }

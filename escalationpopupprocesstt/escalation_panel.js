@@ -317,14 +317,14 @@
         styleEl.id = "pttEscKeyframesStyle";
         styleEl.textContent =
             "@keyframes pttNeedSupportBlink {" +
-            "  0%, 3% { background-color: #ffffff; border-color: #ffffff; color: #dc2626; }" +
-            "  3.1%, 100% { background-color: #dc2626; border-color: #ef4444; color: #ffffff; }" +
+            "  0%, 3% { background-color: #ffffff; border-color: #dcdfe6; color: #f56c6c; }" +
+            "  3.1%, 100% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; }" +
             "}" +
             "@keyframes pttEscDoubleBlinkAlert {" +
             "  0%, 80%, 100% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
-            "  83% { background-color: #fee2e2; border-color: #ef4444; color: #b91c1c; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }" +
+            "  83% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; box-shadow: 0 0 6px rgba(245, 108, 108, 0.6); }" +
             "  87% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
-            "  91% { background-color: #fee2e2; border-color: #ef4444; color: #b91c1c; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }" +
+            "  91% { background-color: #f56c6c; border-color: #f56c6c; color: #ffffff; box-shadow: 0 0 6px rgba(245, 108, 108, 0.6); }" +
             "  95% { background-color: #ffffff; border-color: #dcdfe6; color: #606266; box-shadow: none; }" +
             "}";
         document.head.appendChild(styleEl);
@@ -631,14 +631,13 @@
                     if (isSupport) {
                         var st = item.support_status || item.status;
                         var isNeedSupp = String(st).toUpperCase() === "NEED";
-                        var badgeColor = isNeedSupp ? "#dc2626" : "#16a34a";
-                        var badgeBg = isNeedSupp ? "#fee2e2" : "#dcfce7";
+                        var badgeBg = isNeedSupp ? "#f56c6c" : "#67c23a";
                         var label = isNeedSupp ? "Need Support" : "No Need Support";
-                        htmlHist += '    <span style="color: ' + badgeColor + '; background: ' + badgeBg + '; padding: 1px 6px; border-radius: 4px; font-weight: 600;">' + label + '</span>';
+                        htmlHist += '    <span style="color: #ffffff; background: ' + badgeBg + '; padding: 2px 7px; border-radius: 4px; font-weight: 700; font-size: 11px;">' + label + '</span>';
                         htmlHist += '    <span>Set at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     } else {
                         var lvlVal = item.esc_level !== undefined && item.esc_level !== null ? item.esc_level : (item.level !== undefined ? item.level : "-");
-                        htmlHist += '    <span style="color: #303133; font-weight: 600;">Level ' + lvlVal + ':</span>';
+                        htmlHist += '    <span class="ptt-esc-summary-badge is-active-l' + lvlVal + '" style="font-size: 11px; padding: 2px 7px; font-weight: 700;">Level ' + lvlVal + '</span>';
                         htmlHist += '    <span>Triggered at ' + escapeHtml(formatTimeToUTC7(item.time || item.create_time)) + ' by <strong style="color: #409eff;">' + escapeHtml(item.by || item.operator_name || "-") + '</strong></span>';
                     }
                     htmlHist += '  </div>';
@@ -980,22 +979,22 @@
         if (targetSupp === "NEED") {
             if (targetText) {
                 targetText.textContent = "Need Support";
-                targetText.style.color = "#dc2626";
+                targetText.style.color = "#f56c6c";
             }
             if (modalTitle) modalTitle.textContent = "Request Support";
             if (modalIcon) {
-                modalIcon.style.backgroundColor = "#fee2e2";
-                modalIcon.style.color = "#dc2626";
+                modalIcon.style.backgroundColor = "#fef0f0";
+                modalIcon.style.color = "#f56c6c";
             }
         } else {
             if (targetText) {
                 targetText.textContent = "No Need Support";
-                targetText.style.color = "#16a34a";
+                targetText.style.color = "#67c23a";
             }
             if (modalTitle) modalTitle.textContent = "Cancel Support Request";
             if (modalIcon) {
-                modalIcon.style.backgroundColor = "#dcfce7";
-                modalIcon.style.color = "#16a34a";
+                modalIcon.style.backgroundColor = "#f0f9eb";
+                modalIcon.style.color = "#67c23a";
             }
         }
 
