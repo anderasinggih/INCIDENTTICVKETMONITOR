@@ -54,7 +54,18 @@ function main() {
 
     let logs = (response && response.results) ? response.results : [];
     if (!Array.isArray(logs) || logs.length === 0) {
-        return { code: 200, message: "No escalation logs found", orderid: orderId, log_text: "-" };
+        return { 
+            code: 200, 
+            message: "No escalation logs found", 
+            orderid: orderId, 
+            log_text: "-", 
+            escalation_recordtext: "-", 
+            logs: [],
+            data: {
+                escalation_recordtext: "-",
+                logs: []
+            }
+        };
     }
 
     // 3. Format setiap riwayat baris log menjadi teks bebas terstruktur
@@ -100,8 +111,10 @@ function main() {
         orderid: orderId,
         log_text: fullLogText,
         escalation_recordtext: fullLogText,
+        logs: logs,
         data: {
-            escalation_recordtext: fullLogText
+            escalation_recordtext: fullLogText,
+            logs: logs
         }
     };
 }
