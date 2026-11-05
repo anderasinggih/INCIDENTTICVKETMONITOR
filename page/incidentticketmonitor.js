@@ -3156,8 +3156,8 @@
             "  83% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
             "  91% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
             "}" +
-            "@media (max-width: 1080px) { .custom-wo-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }" +
-            "@media (max-width: 680px) { .custom-wo-cards-grid { grid-template-columns: minmax(0, 1fr) !important; } }" +
+            "@media (max-width: 1080px) { .custom-wo-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-auto-rows: 860px !important; } }" +
+            "@media (max-width: 680px) { .custom-wo-cards-grid { grid-template-columns: minmax(0, 1fr) !important; grid-auto-rows: 860px !important; } }" +
             ".custom-domain-stat-badge.blink-alert.is-flashing * { color: #09090b !important; }";
         document.head.appendChild(styleEl);
     }
