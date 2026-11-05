@@ -1520,7 +1520,7 @@
             var faultLevelStr = String(extractOWSField(ticket.fault_level) || "").trim();
             var isEmergency = faultLevelStr.toUpperCase() === "EMERGENCY";
 
-            html += '<div class="custom-wo-card' + (isPMA ? ' custom-wo-card-pma' : '') + (isNeed ? ' need-support' : '') + (isEmergency ? ' is-emergency-card' : '') + '">';
+            html += '<div class="custom-wo-card' + (isPMA ? ' custom-wo-card-pma' : '') + (isNeed ? ' need-support' : '') + '">';
             html += '  <div class="custom-wo-card-header">';
             html += '    <div class="custom-detail-title-group">';
             html += '      <span class="custom-ticket-id">' + escapeHtml(orderId) + '</span>';
@@ -3155,11 +3155,6 @@
             "  0%, 80%, 87%, 100% { box-shadow: none; filter: none; }" +
             "  83% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
             "  91% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
-            "}" +
-            "@keyframes ptt-pulse-emergency {" +
-            "  0% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }" +
-            "  50% { transform: scale(1.04); box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); }" +
-            "  100% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }" +
             "}" +
             "@media (max-width: 1080px) { .custom-wo-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }" +
             "@media (max-width: 680px) { .custom-wo-cards-grid { grid-template-columns: minmax(0, 1fr) !important; } }" +
