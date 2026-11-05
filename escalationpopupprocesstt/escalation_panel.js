@@ -851,42 +851,6 @@
                     state.currentUser = res.current_user;
                 }
                 var detail = (res && res.data) ? res.data : {};
-                var rawLogs = (res && Array.isArray(res.escalation_logs)) ? res.escalation_logs : [];
-
-                // Filter logs to match this ticket only
-                var normTargetId = targetId.toUpperCase();
-                var logs = rawLogs.filter(function (row) {
-                    if (!row) return false;
-                    var rId = String(row.orderid || row.order_id || row.orderId || "").trim().toUpperCase();
-                    return rId === normTargetId;
-                });
-
-                if (logs.length > 0 && (!state.escalationHistory || state.escalationHistory.length === 0)) {
-                    var maxLogLevel = 0;
-                    state.escalationHistory = logs.map(function (row) {
-                        var lType = String(row.log_type || "").toUpperCase();
-                        var lNum = Number(row.esc_level || 0);
-                        if (lType.indexOf("ESCALATION") !== -1 && !isNaN(lNum) && lNum > maxLogLevel) {
-                            maxLogLevel = lNum;
-                        }
-                        return {
-                            log_type: row.log_type,
-                            level: row.esc_level,
-                            esc_level: row.esc_level,
-                            support_status: row.support_status,
-                            time: row.create_time,
-                            create_time: row.create_time,
-                            operator_id: row.operator_id || "",
-                            operator_name: row.operator_name || row.by || "",
-                            by: row.operator_name || row.operator_id || "Operator",
-                            description: row.description || "",
-                            note: row.description || ""
-                        };
-                    });
-                    if (maxLogLevel > state.escalationLevel) {
-                        state.escalationLevel = maxLogLevel;
-                    }
-                }
 
                 var dLevel = Number(extractOWSField(detail.escalationlevelnumber) || 0);
                 if (isNaN(dLevel)) dLevel = 0;
