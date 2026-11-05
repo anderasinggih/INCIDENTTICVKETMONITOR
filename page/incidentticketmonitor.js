@@ -3161,6 +3161,8 @@
             "  50% { transform: scale(1.04); box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); }" +
             "  100% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }" +
             "}" +
+            "@media (max-width: 1080px) { .custom-wo-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }" +
+            "@media (max-width: 680px) { .custom-wo-cards-grid { grid-template-columns: minmax(0, 1fr) !important; } }" +
             ".custom-domain-stat-badge.blink-alert.is-flashing * { color: #09090b !important; }";
         document.head.appendChild(styleEl);
     }

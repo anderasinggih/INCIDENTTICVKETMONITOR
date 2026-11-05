@@ -329,18 +329,6 @@
   width: 100%;
 }
 
-@media (max-width: 1080px) {
-  .custom-wo-cards-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 680px) {
-  .custom-wo-cards-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 .custom-wo-card {
   background-color: var(--custom-card);
   border: 1px solid var(--custom-border);
