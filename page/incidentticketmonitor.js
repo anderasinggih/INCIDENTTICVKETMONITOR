@@ -1425,6 +1425,12 @@
         var filtered = getFilteredTickets();
 
         filtered.sort(function (a, b) {
+            var isEmergA = String(extractOWSField(a.fault_level) || "").trim().toUpperCase() === "EMERGENCY";
+            var isEmergB = String(extractOWSField(b.fault_level) || "").trim().toUpperCase() === "EMERGENCY";
+
+            if (isEmergA && !isEmergB) return -1;
+            if (!isEmergA && isEmergB) return 1;
+
             var aMin = parseAgingToMinutes(extractOWSField(a.aging_time) || "");
             var bMin = parseAgingToMinutes(extractOWSField(b.aging_time) || "");
             if (aMin === 0 && a.alarm_time) {
@@ -1511,12 +1517,18 @@
                 suppTitle = isNeed ? "Support: NEED" : "Support: NO NEED";
             }
 
-            html += '<div class="custom-wo-card' + (isPMA ? ' custom-wo-card-pma' : '') + (isNeed ? ' need-support' : '') + '">';
+            var faultLevelStr = String(extractOWSField(ticket.fault_level) || "").trim();
+            var isEmergency = faultLevelStr.toUpperCase() === "EMERGENCY";
+
+            html += '<div class="custom-wo-card' + (isPMA ? ' custom-wo-card-pma' : '') + (isNeed ? ' need-support' : '') + (isEmergency ? ' is-emergency-card' : '') + '">';
             html += '  <div class="custom-wo-card-header">';
             html += '    <div class="custom-detail-title-group">';
             html += '      <span class="custom-ticket-id">' + escapeHtml(orderId) + '</span>';
             html += '      <span class="' + domainBadgeClass + '">' + escapeHtml(domainLabel) + '</span>';
             html += '      <span class="custom-status-pill ' + statusClass + '">' + escapeHtml(status) + '</span>';
+            if (isEmergency) {
+                html += '      <span class="custom-emergency-badge" title="Fault Level: Emergency">EMERGENCY</span>';
+            }
             if (!isPMA && escData) {
                 html += renderEscalationDotsHTML(escData, orderId, agingMinutes);
                 html += '      <span class="custom-support-btn ' + (isNeed ? 'support-need' : 'support-no-need') + '" title="' + escapeHtml(suppTitle) + '">' + (isNeed ? 'Need Support' : 'No Need Support') + '</span>';

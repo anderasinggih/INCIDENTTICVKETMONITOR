@@ -56,6 +56,8 @@ function main() {
                 aging_time: getAgingTime(pmaPlanStart, timeUTC7),
                 tt_action: pmaAction,
                 tt_domain: "PMA",
+                fault_level: "",
+                fault_level_val: 0,
                 rca_description: pmaAction,
                 predictive_etr: "-",
                 estimated_cp: "-",
@@ -113,6 +115,8 @@ function main() {
                 aging_time: getAgingTime(liveAlarmTime, timeUTC7),
                 tt_action: liveAction,
                 tt_domain: info.tt_domain,
+                fault_level: !COMMON_UTIL.isNull(info.fault_level_label) ? info.fault_level_label : "",
+                fault_level_val: !COMMON_UTIL.isNull(info.fault_level_val) ? Number(info.fault_level_val) : 0,
                 escalationlevelnumber: !COMMON_UTIL.isNull(info.tt_live_escalationlevelnumber) ? Number(info.tt_live_escalationlevelnumber) : 0,
                 escalationsupport: !COMMON_UTIL.isNull(info.tt_live_escalationsupport) ? info.tt_live_escalationsupport : "NO_NEED",
                 raw_alarm_time: liveAlarmTime,
@@ -120,8 +124,14 @@ function main() {
         }
     }
 
-    // Urutkan berdasarkan aging paling lama di atas (alarm time paling awal)
+    // Urutkan: Emergency paling atas, lalu berdasarkan aging paling lama di atas (alarm time paling awal)
     list.sort(function (a, b) {
+        let isEmergencyA = String(a.fault_level || "").trim().toUpperCase() === "EMERGENCY";
+        let isEmergencyB = String(b.fault_level || "").trim().toUpperCase() === "EMERGENCY";
+
+        if (isEmergencyA && !isEmergencyB) return -1;
+        if (!isEmergencyA && isEmergencyB) return 1;
+
         let tA = a.raw_alarm_time ? Number(TimeUtil.parseTimestamp(a.raw_alarm_time, "yyyy-MM-dd HH:mm:ss")) : 0;
         let tB = b.raw_alarm_time ? Number(TimeUtil.parseTimestamp(b.raw_alarm_time, "yyyy-MM-dd HH:mm:ss")) : 0;
         if (tA === 0) return 1;
@@ -165,6 +175,8 @@ function getTTList() {
             tt.estimated_cp as tt_live_estimated_cp,
             tt.escalationlevelnumber as tt_live_escalationlevelnumber,
             tt.escalationsupport as tt_live_escalationsupport,
+            fl.label as fault_level_label,
+            fl.fault_level as fault_level_val,
             v.name as vendor_name,
             v.label as vendor_label,
             tt.responsibility as tt_live_responsibility,
@@ -180,6 +192,7 @@ function getTTList() {
             pma.resolution_notes as pma_resolution_notes
             from "/CN_GSC_ID_Surge_Noc_Dashboard/IncidentTicketMonitor/incwo_incidentticketmonitor" as inc
             left join "/TroubleTicket/TroubleTicket/tt_troubleticket" as tt on inc.orderid = tt.orderid
+            left join "/datahub/cmdb/cmdb_fault_level" as fl on tt.faultlevel = fl.id
             left join "/DataSource/msup_customization_options/customization_options_vendor" as v on tt.responsibility = v.id
             left join "/ProblemManagementActivity/ProblemManagementActivity/pma_problemmanagementactivity" as pma on inc.orderid = pma.order_id
             where inc.active = true 

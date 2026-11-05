@@ -1,0 +1,8 @@
+﻿description,label,fault_level,id,keycode,actual_model_id,active,change_time
+Emergency,Emergency,	8,24ae93ff-83eb-11f1-b40c-0255ac1215a3,	8,	,true,	1784518138117
+Indeterminate,Indeterminate,	1,d46ec584-e15e-11f0-a16d-0255ac12045a,	1,	,true,	1766645785569
+Warning,Warning,	2,d4709a48-e15e-11f0-a16d-0255ac12045a,	2,	,false,	1792467935584
+Minor,Minor,	3,d47220ea-e15e-11f0-a16d-0255ac12045a,	3,	,true,	1766645785591
+Major,Major,	4,d473596c-e15e-11f0-a16d-0255ac12045a,	4,	,true,	1766645785599
+Critical,Critical,	5,d47491ed-e15e-11f0-a16d-0255ac12045a,	5,	,true,	1766645785607
+Clear,Clear,	6,d475f184-e15e-11f0-a16d-0255ac12045a,	6,	,true,	1766645785616
