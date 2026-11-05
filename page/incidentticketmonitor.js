@@ -1545,20 +1545,14 @@
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
                 html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Link Segment</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(linkSegment) + '">' + escapeHtml(linkSegment) + '</span></div>';
             } else {
-                var cm = extractOWSField(ticket.cm_orderid) || "-";
                 var alarmTime = extractOWSField(ticket.alarm_time) || "-";
-                var clearTime = extractOWSField(ticket.clear_time) || "-";
                 var agingTime = extractOWSField(ticket.aging_time) || "-";
-                var alarmStatus = extractOWSField(ticket.alarm_status) || "-";
                 var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
                 var prolongReason = extractOWSField(ticket.prolong_reason) || "-";
 
-                html += '      <div class="custom-detail-item"><span class="custom-detail-label">CM Order ID</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(cm) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">PIC Contractor</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(pic) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(alarmTime) + '</span></div>';
-                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Clear Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(clearTime) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Aging Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(agingTime) + '</span></div>';
-                html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Status</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(alarmStatus) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(rootCause) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Sub Root Cause</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(subRootCause) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
@@ -2092,7 +2086,15 @@
                         } else {
                             targetUrl = "/adc-web/bpm/order-process/order-submit-panel.html?" + queryString;
                         }
-                        window.open(targetUrl, "_blank");
+                        
+                        // Buka di OWS portal tab, fallback window.open
+                        if (typeof Spl !== "undefined" && Spl.Page && Spl.Page.openTab) {
+                            Spl.Page.openTab(targetUrl, { target: "_tab", title: orderId }, {});
+                        } else if (window.top && window.top.openTab) {
+                            window.top.openTab(targetUrl, orderId);
+                        } else {
+                            window.open(targetUrl, "_blank");
+                        }
                         return;
                     }
                     showToast("Process instance not active or not found in BPM for " + orderId, false);
