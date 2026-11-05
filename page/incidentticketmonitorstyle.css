@@ -478,12 +478,6 @@
   animation: ptt-pulse-emergency 2s infinite ease-in-out;
 }
 
-@keyframes ptt-pulse-emergency {
-  0% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
-  50% { transform: scale(1.04); box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); }
-  100% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
-}
-
 .custom-wo-card.is-emergency-card {
   border-left: 4px solid #ef4444 !important;
 }

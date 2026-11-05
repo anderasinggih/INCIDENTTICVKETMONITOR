@@ -3156,6 +3156,11 @@
             "  83% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
             "  91% { background-color: #ffffff !important; border-color: #ffffff !important; box-shadow: 0 0 14px rgba(255, 255, 255, 0.95); filter: brightness(1.6) contrast(1.2); }" +
             "}" +
+            "@keyframes ptt-pulse-emergency {" +
+            "  0% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }" +
+            "  50% { transform: scale(1.04); box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); }" +
+            "  100% { transform: scale(1); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }" +
+            "}" +
             ".custom-domain-stat-badge.blink-alert.is-flashing * { color: #09090b !important; }";
         document.head.appendChild(styleEl);
     }
