@@ -40,7 +40,8 @@
         modalMouseDownTarget: null,
         toastTimer: null,
         syncChannel: null,
-        existsInInclink: false
+        existsInInclink: false,
+        isFetchingLogs: false
     };
 
     // =========================================================================
@@ -250,7 +251,7 @@
         if (callback) callback(updated);
     }
 
-    function refreshProcessTTFormEscalationFields() {
+    function refreshProcessTTFormEscalationFields(recordText) {
         var lvl = Number(state.escalationLevel || 0);
         var levelDisplay = lvl > 0 ? ("Level " + lvl) : "No Escalation";
         var suppDisplay = state.escalationSupport === "NEED" ? "Need Support" : "No Need Support";
@@ -260,17 +261,8 @@
         if (lvl > 0) setOwsComponentValue("escalationlevelnumber", lvl);
         setOwsComponentValue("escalationsupport", state.escalationSupport);
 
-        // Also refresh escalation_recordtext on Process TT form
-        if (state.orderId && typeof MessageProcessor !== "undefined" && MessageProcessor.process) {
-            MessageProcessor.process({
-                serviceId: SERVICE_LOG_TEXT,
-                data: { orderid: state.orderId },
-                success: function (res) {
-                    var textVal = (res && res.escalation_recordtext) ? res.escalation_recordtext : "-";
-                    setOwsComponentValue("escalation_recordtext", textVal);
-                },
-                error: function () { }
-            });
+        if (recordText && recordText !== "-") {
+            setOwsComponentValue("escalation_recordtext", recordText);
         }
     }
 
@@ -703,11 +695,18 @@
             return;
         }
 
+        if (state.isFetchingLogs) {
+            if (callback) callback(state.escalationHistory || []);
+            return;
+        }
+        state.isFetchingLogs = true;
+
         // Gunakan incwo_get_escalation_log_text secara presisi sesuai orderid tiket (Zero Fallback / No GetList)
         MessageProcessor.process({
             serviceId: SERVICE_LOG_TEXT,
             data: { orderid: targetId },
             success: function (res) {
+                state.isFetchingLogs = false;
                 // Pastikan respon untuk tiket yang saat ini sedang aktif
                 if (String(state.orderId).trim().toUpperCase() !== targetId.toUpperCase()) return;
 
@@ -814,6 +813,7 @@
                 if (callback) callback(state.escalationHistory);
             },
             error: function () {
+                state.isFetchingLogs = false;
                 if (callback) callback(state.escalationHistory || []);
             }
         });
