@@ -1543,6 +1543,11 @@
             html += '    <div class="custom-detail-grid">';
             html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Title</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(title) + '</span></div>';
 
+            if (!isPMA) {
+                var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
+                html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
+            }
+
             if (isPMA) {
                 var ptSource = extractOWSField(ticket.cm_orderid || ticket.problem_ticket_id) || "-";
                 var planStart = extractOWSField(ticket.plan_start_time || ticket.alarm_time) || "-";
@@ -1559,10 +1564,8 @@
             } else {
                 var alarmTime = extractOWSField(ticket.alarm_time) || "-";
                 var agingTime = extractOWSField(ticket.aging_time) || "-";
-                var impactSiteList = extractOWSField(ticket.impactsitelist) || "-";
                 var prolongReason = extractOWSField(ticket.prolong_reason) || "-";
 
-                html += '      <div class="custom-detail-item full-width"><span class="custom-detail-label">Impact Site List</span><span class="custom-detail-sep">:</span><span class="custom-detail-val" title="' + escapeHtml(impactSiteList) + '">' + escapeHtml(impactSiteList) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">PIC Contractor</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(pic) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Alarm Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val custom-detail-val-mono">' + escapeHtml(alarmTime) + '</span></div>';
                 html += '      <div class="custom-detail-item"><span class="custom-detail-label">Aging Time</span><span class="custom-detail-sep">:</span><span class="custom-detail-val">' + escapeHtml(agingTime) + '</span></div>';
